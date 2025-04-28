@@ -4,13 +4,19 @@ import com.raven.component.Header;
 import com.raven.component.Menu;
 import com.raven.event.EventMenuSelected;
 import com.raven.event.EventShowPopupMenu;
+import com.raven.form.Bulanan;
 import com.raven.form.Bumbu;
+import com.raven.form.DataKaryawan;
 import com.raven.form.Data_Barang;
 import com.raven.form.Form1;
 import com.raven.form.Form_Home;
 import com.raven.form.Ikan;
 import com.raven.form.MainForm;
 import com.raven.form.Tepung;
+import com.raven.form.DataPelanggan;
+import com.raven.form.DataSupplier;
+import com.raven.form.Harian;
+import com.raven.form.Tahunan;
 import com.raven.swing.MenuItem;
 import com.raven.swing.PopupMenu;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
@@ -49,49 +55,42 @@ public class Main extends javax.swing.JFrame {
                 System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
                 switch (menuIndex) {
             case 0: // Dashboard
-                main.showForm(new Ikan());
+                main.showForm(new Form_Home());
                 break;
             case 1: // Data Barang
                 switch (subMenuIndex) {
                     case 0:
-                        main.showForm(new Data_Barang());
-                        break;
-                    case 1:
                         main.showForm(new Bumbu());
                         break;
-                    case 2:
+                    case 1:
                         main.showForm(new Ikan());
                         break;
-                    case 3:
+                    case 2:
                         main.showForm(new Tepung());
                         break;
                 }
                 break;
-            case 2: // Data transaksi
+            case 2: // Data Supplier
+                main.showForm(new DataSupplier());
+                break;
+            case 3: // Data Karyawan
+                          main.showForm(new DataKaryawan());  // Ganti dengan nama JForm lain yang sesuai
+                break;
+            case 4: // DataPelanggan
+                main.showForm(new DataPelanggan());
+                break;
+            case 5: // Keuangan
                 switch (subMenuIndex) {
                     case 0:
-                        main.showForm(new Form1());
+                        main.showForm(new Harian());
                         break;
                     case 1:
-                        main.showForm(new Form1());
+                        main.showForm(new Bulanan());
+                        break;
+                    case 2:
+                        main.showForm(new Tahunan());
                         break;
                 }
-                break;
-            case 3: // Data Supplier
-                main.showForm(new Form1());
-                break;
-            case 4: // Peminjaman
-                switch (subMenuIndex) {
-                    case 0:
-                        main.showForm(new Form1());
-                        break;
-                    case 1:
-                        main.showForm(new Form1());
-                        break;
-                }
-                break;
-            case 5: // Pengaturan Akun
-                          main.showForm(new Form1());  // Ganti dengan nama JForm lain yang sesuai
                 break;
             case 6: // Log Out
                 logout();

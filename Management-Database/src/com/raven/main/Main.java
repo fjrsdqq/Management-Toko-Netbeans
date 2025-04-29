@@ -7,8 +7,6 @@ import com.raven.event.EventShowPopupMenu;
 import com.raven.form.Bulanan;
 import com.raven.form.Bumbu;
 import com.raven.form.DataKaryawan;
-import com.raven.form.Data_Barang;
-import com.raven.form.Form1;
 import com.raven.form.Form_Home;
 import com.raven.form.Ikan;
 import com.raven.form.MainForm;
@@ -49,68 +47,62 @@ public class Main extends javax.swing.JFrame {
         menu = new Menu();
         header = new Header();
         main = new MainForm();
-        menu.addEvent(new EventMenuSelected() {
-            @Override
-            public void menuSelected(int menuIndex, int subMenuIndex) {
-                System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
-                switch (menuIndex) {
-            case 0: // Dashboard
-                main.showForm(new Form_Home());
-                break;
-            case 1: // Data Barang
-                switch (subMenuIndex) {
-                    case 0:
-                        main.showForm(new Bumbu());
-                        break;
-                    case 1:
-                        main.showForm(new Ikan());
-                        break;
-                    case 2:
-                        main.showForm(new Tepung());
-                        break;
-                }
-                break;
-            case 2: // Data Supplier
-                main.showForm(new DataSupplier());
-                break;
-            case 3: // Data Karyawan
-                          main.showForm(new DataKaryawan());  // Ganti dengan nama JForm lain yang sesuai
-                break;
-            case 4: // DataPelanggan
-                main.showForm(new DataPelanggan());
-                break;
-            case 5: // Keuangan
-                switch (subMenuIndex) {
-                    case 0:
-                        main.showForm(new Harian());
-                        break;
-                    case 1:
-                        main.showForm(new Bulanan());
-                        break;
-                    case 2:
-                        main.showForm(new Tahunan());
-                        break;
-                }
-                break;
-            case 6: // Log Out
-                logout();
-                break;
-            default:
-                System.out.println("Menu tidak dikenal");
-                break;
-        }
+        menu.addEvent((int menuIndex, int subMenuIndex) -> {
+            System.out.println("Menu Index : " + menuIndex + " SubMenu Index " + subMenuIndex);
+            switch (menuIndex) {
+                case 0: // Dashboard
+                    main.showForm(new Form_Home());
+                    break;
+                case 1: // Data Barang
+                    switch (subMenuIndex) {
+                        case 0:
+                            main.showForm(new Bumbu());
+                            break;
+                        case 1:
+                            main.showForm(new Ikan());
+                            break;
+                        case 2:
+                            main.showForm(new Tepung());
+                            break;
+                    }
+                    break;
+                case 2: // Data Supplier
+                    main.showForm(new DataSupplier());
+                    break;
+                case 3: // Data Karyawan
+                    main.showForm(new DataKaryawan());  // Ganti dengan nama JForm lain yang sesuai
+                    break;
+                case 4: // DataPelanggan
+                    main.showForm(new DataPelanggan());
+                    break;
+                case 5: // Keuangan
+                    switch (subMenuIndex) {
+                        case 0:
+                            main.showForm(new Harian());
+                            break;
+                        case 1:
+                            main.showForm(new Bulanan());
+                            break;
+                        case 2:
+                            main.showForm(new Tahunan());
+                            break;
+                    }
+                    break;
+                case 6: // Log Out
+                    logout();
+                    break;
+                default:
+                    System.out.println("Menu tidak dikenal");
+                    break;
             }
         });
-        menu.addEventShowPopup(new EventShowPopupMenu() {
-            @Override
-            public void showPopup(Component com) {
-                MenuItem item = (MenuItem) com;
-                PopupMenu popup = new PopupMenu(Main.this, item.getIndex(), item.getEventSelected(), item.getMenu().getSubMenu());
-                int x = Main.this.getX() + 52;
-                int y = Main.this.getY() + com.getY() + 86;
-                popup.setLocation(x, y);
-                popup.setVisible(true);
-            }
+        menu.addEventShowPopup((Component com) -> {
+            MenuItem item = (MenuItem) com;
+            PopupMenu popup = new PopupMenu(Main.this, item.getIndex(), item.getEventSelected(), item.getMenu().getSubMenu());
+            int x1 = Main.this.getX() + 52;
+            int y1 = Main.this.getY() + com.getY() + 86;
+            popup.setLocation(x1, y1);
+            popup.setVisible(true);
         });
         menu.initMenuItem();
         bg.add(menu, "w 230!, spany 2");    // Span Y 2cell
@@ -140,22 +132,19 @@ public class Main extends javax.swing.JFrame {
         animator.setResolution(0);
         animator.setDeceleration(0.5f);
         animator.setAcceleration(0.5f);
-        header.addMenuEvent(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                if (!animator.isRunning()) {
-                    animator.start();
-                }
-                menu.setEnableMenu(false);
-                if (menu.isShowMenu()) {
-                    menu.hideallMenu();
-                }
+        header.addMenuEvent((ActionEvent ae) -> {
+            if (!animator.isRunning()) {
+                animator.start();
+            }
+            menu.setEnableMenu(false);
+            if (menu.isShowMenu()) {
+                menu.hideallMenu();
             }
         });
         //  Init google icon font
         IconFontSwing.register(GoogleMaterialDesignIcons.getIconFont());
         //  Start with this form
-        main.showForm(new Ikan());
+        main.showForm(new Form_Home());
     }
 
     @SuppressWarnings("unchecked")

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2025 at 03:43 PM
+-- Generation Time: May 21, 2025 at 02:30 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.1.25
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -118,15 +118,16 @@ CREATE TABLE `pelanggan` (
   `id_pelanggan` int(11) NOT NULL,
   `nama_pelanggan` varchar(100) NOT NULL,
   `no_hp` varchar(20) DEFAULT NULL,
-  `alamat` text DEFAULT NULL
+  `alamat` text DEFAULT NULL,
+  `perusahaan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pelanggan`
 --
 
-INSERT INTO `pelanggan` (`id_pelanggan`, `nama_pelanggan`, `no_hp`, `alamat`) VALUES
-(1, 'Pelanggan Setia', '083234567890', 'Jl. Melati No.3');
+INSERT INTO `pelanggan` (`id_pelanggan`, `nama_pelanggan`, `no_hp`, `alamat`, `perusahaan`) VALUES
+(2, 'kafe1', '12345', 'bogor', 'ceriamandiri');
 
 -- --------------------------------------------------------
 
@@ -162,13 +163,6 @@ CREATE TABLE `transaksi_pelanggan` (
   `total_transaksi` decimal(15,2) NOT NULL,
   `keterangan` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `transaksi_pelanggan`
---
-
-INSERT INTO `transaksi_pelanggan` (`id_transaksi`, `id_pelanggan`, `tanggal_transaksi`, `total_transaksi`, `keterangan`) VALUES
-(1, 1, '2025-04-28', 300000.00, 'Pembelian produk A dan B');
 
 --
 -- Indexes for dumped tables
@@ -250,7 +244,7 @@ ALTER TABLE `keuangan`
 -- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `supplier`

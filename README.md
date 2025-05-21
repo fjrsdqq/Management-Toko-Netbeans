@@ -7,6 +7,7 @@ Dibuat Oleh Kelompok 3 kelas R6O/RO, Universitas Indraprasta PGRI.
 - Clone Repo
 - Import Library yang ada di Folder yang sudah di Clone
 - Jalankan
+- jangan lupa pake JDK 1.8
   
 ## Cara Clone Repository
 

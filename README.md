@@ -1,7 +1,13 @@
 # Management Toko Netbeans
 
 Ini adalah proyek aplikasi **Manajemen Toko** yang dibuat menggunakan **Netbeans** (Java).
+Dibuat Oleh Kelompok 3 kelas R6O/RO, Universitas Indraprasta PGRI.
 
+# Cara Pemakaian
+- Clone Repo
+- Import Library yang ada di Folder yang sudah di Clone
+- Jalankan
+  
 ## Cara Clone Repository
 
 1. Buka terminal / Git Bash

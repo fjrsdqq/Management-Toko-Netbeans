@@ -25,16 +25,16 @@
   ![image](https://github.com/user-attachments/assets/fa5c0a47-198a-4de4-b29c-cdf763d960cc)
 
 
-
-  # Tentang Kelompok 3 :
-- Anggota :
-  1. Ahmad Ferdiansyah   NPM 202243501449
-  2. Aulif Nazar Rabbani NPM
-  3. Chelseano Putra     NPM
-  4. Dicky Achmad        NPM
-  5. Fajar Sidik         NPM
-  6. Heru                NPM
-  7. M. Ihsan P.         NPM            
+## Tentang Kelompok 3 :
+| Name                       |NPM                | University                                |
+|----------------------------|-------------------|-------------------------------------------|
+| Ahmad Ferdiansyah          | 202243501449      | Universitas Indraprasta PGRI              |
+| Aulif Nazar Rabbani        |                   | Universitas Indraprasta PGRI              |
+| Chelseano Putra            |                   | Universitas Indraprasta PGRI              |
+| Dicky Achmad               |                   | Universitas Indraprasta PGRI              |
+| Fajar Sidik                |                   | Universitas Indraprasta PGRI              |
+|Heru                        |                   | Universitas Indraprasta PGRI              |
+| M. Ihsan Prasetyo          |                   | Universitas Indraprasta PGRI              |
 
 
   

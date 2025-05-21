@@ -25,7 +25,7 @@
   ![image](https://github.com/user-attachments/assets/fa5c0a47-198a-4de4-b29c-cdf763d960cc)
 
 
-## Tentang Kelompok 3 :
+# Tentang Kelompok 3 :
 | Name                       |NPM                | University                                |
 |----------------------------|-------------------|-------------------------------------------|
 | Ahmad Ferdiansyah          | 202243501449      | Universitas Indraprasta PGRI              |

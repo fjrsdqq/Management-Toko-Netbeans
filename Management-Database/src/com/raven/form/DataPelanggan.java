@@ -3,15 +3,17 @@ package com.raven.form;
 import com.raven.dialog.Message;
 import com.raven.main.Main;
 import com.raven.model.ModelCard;
-import com.raven.model.ModelStudent;
+import com.raven.model.ModelDataPelanggan;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
 import com.raven.swing.icon.IconFontSwing;
-import com.raven.swing.table.EventAction;
 import java.awt.Color;
+import java.sql.*;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class DataPelanggan extends javax.swing.JPanel {
+com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
     public DataPelanggan() {
         initComponents();
@@ -26,39 +28,45 @@ public class DataPelanggan extends javax.swing.JPanel {
     }
 
     private void initTableData() {
-        EventAction eventAction = new EventAction() {
-            @Override
-            public void delete(ModelStudent student) {
-                if (showMessage("Delete Student : " + student.getName())) {
-                    System.out.println("User click OK");
-                } else {
-                    System.out.println("User click Cancel");
-                }
-            }
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+    model.setRowCount(0);
 
-            @Override
-            public void update(ModelStudent student) {
-                if (showMessage("Update Student : " + student.getName())) {
-                    System.out.println("User click OK");
-                } else {
-                    System.out.println("User click Cancel");
-                }
-            }
-        };
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile.jpg")), "Jonh", "Male", "Java", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile1.jpg")), "Dara", "Male", "C++", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        conn = konek.getConnection();
+        String sql = "SELECT id_pelanggan,Perusahaan, nama_pelanggan,no_hp, alamat FROM pelanggan";
+        ps = conn.prepareStatement(sql);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            String id = rs.getString("id_pelanggan");
+            String nama = rs.getString("nama_pelanggan");
+            String kontak = rs.getString("no_hp");
+            String alamats = rs.getString("alamat");
+            String perus = rs.getString("Perusahaan");
+            
+            
+
+            ModelDataPelanggan barang = new ModelDataPelanggan(id, nama,perus,kontak, alamats);
+            model.addRow(barang.toRowTable()); // Tanpa eventAction
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Gagal mengambil data barang dari database.");
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
+        
+        }
 
     private void initCardData() {
         Icon icon1 = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.PEOPLE, 60, new Color(255, 255, 255, 100), new Color(255, 255, 255, 15));
@@ -67,11 +75,7 @@ public class DataPelanggan extends javax.swing.JPanel {
         card2.setData(new ModelCard("TOP PELANGGAN", 2000, 60, icon2));
     }
 
-    private boolean showMessage(String message) {
-        Message obj = new Message(Main.getFrames()[0], true);
-        obj.showMessage(message);
-        return obj.isOk();
-    }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -94,13 +98,13 @@ public class DataPelanggan extends javax.swing.JPanel {
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        txtnama = new javax.swing.JTextField();
+        txtnotel = new javax.swing.JTextField();
+        txtperusahaan = new javax.swing.JTextField();
+        btnsave = new javax.swing.JButton();
+        btndelet = new javax.swing.JButton();
+        btnedit = new javax.swing.JButton();
+        txtalamat = new javax.swing.JTextField();
 
         card1.setColorGradient(new java.awt.Color(211, 28, 215));
 
@@ -123,11 +127,11 @@ public class DataPelanggan extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Name", "Alamat", "No Telepon", "Perusahaan"
+                "ID","Name", "Perusahaan","No Telepon", "Alamat"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -198,30 +202,30 @@ public class DataPelanggan extends javax.swing.JPanel {
 
         jLabel12.setText(":");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        txtnotel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                txtnotelActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Save");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnsave.setText("Save");
+        btnsave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnsaveActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Delete");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btndelet.setText("Delete");
+        btndelet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btndeletActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Edit");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnedit.setText("Edit");
+        btnedit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btneditActionPerformed(evt);
             }
         });
 
@@ -242,24 +246,24 @@ public class DataPelanggan extends javax.swing.JPanel {
                                     .addComponent(jLabel8))
                                 .addGap(35, 35, 35)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
                                     .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
                                     .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
-                                    .addComponent(jTextField3)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jTextField4)))
+                                    .addComponent(txtnotel, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                                    .addComponent(txtnama)
+                                    .addComponent(txtperusahaan)
+                                    .addComponent(txtalamat)))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jLabel3)
                                 .addComponent(jLabel1)))
                         .addGap(12, 12, 12)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton3)
-                            .addComponent(jButton2)
-                            .addComponent(jButton1))
+                            .addComponent(btnedit)
+                            .addComponent(btndelet)
+                            .addComponent(btnsave))
                         .addGap(78, 78, 78)
                         .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
@@ -278,59 +282,166 @@ public class DataPelanggan extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(jLabel9)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1))
+                            .addComponent(txtnama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnsave))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButton3)))
+                                .addGap(14, 14, 14)
+                                .addComponent(btnedit))
                             .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel7)
-                                    .addComponent(jLabel10))))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(7, 7, 7)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jButton2))
-                                    .addComponent(jLabel11))
-                                .addGap(13, 13, 13))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addComponent(jLabel10)
+                                    .addComponent(txtalamat, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btndelet)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel11)
+                                        .addComponent(jLabel6)
+                                        .addComponent(txtnotel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
+                            .addComponent(txtperusahaan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel12)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel8)))
                     .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void txtnotelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnotelActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_txtnotelActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnsaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsaveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        String nama = txtnama.getText();
+        String alamats = txtalamat.getText();
+        String notel = txtnotel.getText();
+        String perusahaan = txtperusahaan.getText();
+        
+        if (nama.isEmpty() || alamats.isEmpty() || notel.isEmpty() || perusahaan.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field harus diisi.");
+            return;
+        }
+        try (Connection conn = konek.getConnection()) {
+        String sql = "INSERT INTO pelanggan SET nama_pelanggan=?, Perusahaan=?, no_hp=?, alamat=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nama);
+        ps.setString(2, perusahaan);
+        ps.setString(3, notel); // Idealnya, password di-hash sebelum disimpan ke database
+        ps.setString(4, alamats);
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        int result = ps.executeUpdate();
+        if (result > 0) {
+            JOptionPane.showMessageDialog(null, "Data berhasil diperbarui!");
+            txtnama.setText(""); // Mengosongkan text field nama
+            txtalamat.setText(""); 
+            txtnotel.setText(""); 
+            txtperusahaan.setText("");
+             initTableData();// refresh tabel
+             
+        } else {
+            JOptionPane.showMessageDialog(null, "Gagal Menambahkan data. Pastikan Password staff/Petugas benar.");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage());
+    }
+    }//GEN-LAST:event_btnsaveActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btndeletActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+        int selectedRow = table1.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus terlebih dahulu.");
+        return;
+    }
+
+    String id = table1.getValueAt(selectedRow, 0).toString();
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus barang ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    try {
+        Connection conn = konek.getConnection();
+        String sql = "DELETE FROM pelanggan WHERE id_pelanggan = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, Integer.parseInt(id));
+        ps.executeUpdate();
+        JOptionPane.showMessageDialog(this, "Pelanggan berhasil dihapus.");
+        ps.close();
+        conn.close();
+
+        initTableData(); // refresh tabel
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Gagal menghapus Pelanggan.");
+    }
+    }//GEN-LAST:event_btndeletActionPerformed
+
+    private void btneditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditActionPerformed
+        // TODO add your handling code here:
+        
+        int selectedRow = table1.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin diedit terlebih dahulu.");
+        return;
+    }
+
+    // Ambil ID dari tabel
+    String id = table1.getValueAt(selectedRow, 0).toString();
+
+    // Ambil nilai dari form
+    String nama = txtnama.getText().trim();
+    String alamat = txtalamat.getText().trim();
+    String notel = txtnotel.getText().trim();
+    String perusahaan = txtperusahaan.getText().trim();
+
+    // Validasi input kosong
+    if (nama.isEmpty() || alamat.isEmpty() || notel.isEmpty() || perusahaan.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Semua field harus diisi.");
+        return;
+    }
+
+    try (Connection conn = konek.getConnection()) {
+        // Sintaks UPDATE yang benar
+        String sql = "UPDATE pelanggan SET nama_pelanggan=?, perusahaan=?, no_hp=?, alamat=? WHERE id_pelanggan=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, nama);
+        ps.setString(2, perusahaan);
+        ps.setString(3, notel);
+        ps.setString(4, alamat);
+        ps.setInt(5, Integer.parseInt(id));
+
+        int result = ps.executeUpdate();
+        if (result > 0) {
+            JOptionPane.showMessageDialog(null, "Data berhasil diperbarui!");
+            resetForm();           // Kosongkan form
+            initTableData();       // Refresh tabel
+        } else {
+            JOptionPane.showMessageDialog(null, "Tidak ada data yang diperbarui.");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + e.getMessage());
+        e.printStackTrace();  // Untuk debugging
+    }
+}
+
+// Fungsi bantu untuk mereset form
+private void resetForm() {
+    txtnama.setText("");
+    txtalamat.setText("");
+    txtnotel.setText("");
+    txtperusahaan.setText("");
+
+    }//GEN-LAST:event_btneditActionPerformed
 
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
@@ -341,11 +452,11 @@ public class DataPelanggan extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btndelet;
+    private javax.swing.JButton btnedit;
+    private javax.swing.JButton btnsave;
     private com.raven.component.Card card1;
     private com.raven.component.Card card2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -359,11 +470,11 @@ public class DataPelanggan extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     private com.raven.swing.table.Table table1;
+    private javax.swing.JTextField txtalamat;
+    private javax.swing.JTextField txtnama;
+    private javax.swing.JTextField txtnotel;
+    private javax.swing.JTextField txtperusahaan;
     // End of variables declaration//GEN-END:variables
 }

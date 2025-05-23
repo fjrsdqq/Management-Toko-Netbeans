@@ -30,7 +30,7 @@
 |----------------------------|-------------------|-------------------------------------------|
 | Ahmad Ferdiansyah          | 202243501449      | Universitas Indraprasta PGRI              |
 | Aulif Nazar Rabbani        |                   | Universitas Indraprasta PGRI              |
-| Chelseano Putra            |                   | Universitas Indraprasta PGRI              |
+| Chelseano Putra            | 202243501420      | Universitas Indraprasta PGRI              |
 | Dicky Achmad               |                   | Universitas Indraprasta PGRI              |
 | Fajar Sidik                |                   | Universitas Indraprasta PGRI              |
 |Heru                        |                   | Universitas Indraprasta PGRI              |

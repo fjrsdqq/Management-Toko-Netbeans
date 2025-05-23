@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package com.raven.model;
-
+import java.text.DecimalFormat;
 /**
  *
  * @author ASUS
@@ -24,18 +24,20 @@ public class ModelForm_Home {
         this.jumlah = jumlah;
     }
 
-    public Object[] toRowTable() {
-        String pemasukan = "";
-        String pengeluaran = "";
+   public Object[] toRowTable() {
+    DecimalFormat df = new DecimalFormat("#,##0"); // Format angka dengan titik ribuan
+    String pemasukan = "";
+    String pengeluaran = "";
 
-        if (tipe.equals("Pemasukan Harian")) {
-            pemasukan = String.valueOf(jumlah);
-        } else if (tipe.equals("Pengeluaran Harian")) {
-            pengeluaran = String.valueOf(jumlah);
-        }
-
-        return new Object[]{id, tanggal, tipe, pemasukan, pengeluaran, keterangan};
+    if (tipe.equals("Pemasukan Harian")) {
+        pemasukan = df.format(jumlah);  // format jumlah
+    } else if (tipe.equals("Pengeluaran Harian")) {
+        pengeluaran = df.format(jumlah);  // format jumlah
     }
+
+    return new Object[]{id, tanggal, tipe, pemasukan, pengeluaran, keterangan};
+}
+
 
 
     

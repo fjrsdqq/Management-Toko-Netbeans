@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 23 Bulan Mei 2025 pada 08.15
+-- Waktu pembuatan: 23 Bulan Mei 2025 pada 13.58
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
 
@@ -106,34 +106,8 @@ CREATE TABLE `keuangan` (
 --
 
 INSERT INTO `keuangan` (`id_keuangan`, `tanggal`, `tipe`, `keterangan`, `jumlah`) VALUES
-(4, '2025-05-08', 'Pemasukan Harian', 'vfdcv', 21321.00),
-(5, '2025-05-08', '', 'pengluaran harian', 22222.00),
-(6, '2025-05-08', 'Pemasukan Harian', 'pengluaran harian', 111.00),
-(8, '2025-05-08', 'Pemasukan Harian', 'ff', 22.00),
-(9, '2025-05-16', 'Pemasukan Harian', 'vfdcv', 222.00),
-(11, '2025-05-17', 'Pemasukan Harian', 'pengluaran harian', 1234.00),
-(12, '2025-05-16', 'Pemasukan Harian', 'qwerty', 1234567890.00),
-(14, '2025-05-24', 'Pemasukan Harian', 'ancbcd', 0.00),
-(15, '2025-05-09', 'Pemasukan Harian', 'aaaaaaaa', 1234.00),
-(18, '2025-05-09', 'Pemasukan Harian', 'dfsdsfsd', 12332432433.00),
-(19, '2025-05-10', '', 'aaaaaaaaaaaaa', 32411111.00),
-(20, '2025-05-10', 'Pemasukan Harian', 'ddddddddd', 222222.00),
-(21, '2025-05-10', '', 'eeeee', 222222222.00),
-(22, '2025-05-17', '', 'aaaaasss', 1111122.00),
-(23, '2025-05-03', '', 'aaaa', 12333.00),
-(24, '2025-05-17', '', 'aqqqq', 11111111.00),
-(26, '2025-05-10', '', 'aaaaaaaa', 1111111.00),
-(27, '2025-05-10', 'Pemasukan Harian', '1111122', 11111111.00),
-(28, '2025-05-03', '', 'aaaaaaa', 11111111.00),
-(30, '2025-05-24', '', 'ada', 2000.00),
-(31, '2025-05-17', 'Pemasukan Harian', '11133', 0.00),
-(32, '2025-05-03', 'Pemasukan Harian', '224', 0.00),
-(33, '2025-05-03', '', 'ee', 11.00),
-(34, '2025-05-17', 'Pengeluaran Harian', 'ww', 3333.00),
-(35, '2025-05-10', 'Pemasukan Harian', 'ww', 222.00),
-(36, '2025-05-08', 'Pemasukan Harian', 'ff', 22.00),
-(37, '2025-05-17', 'Pengeluaran Harian', 'ww', 22.00),
-(38, '2025-05-14', 'Pemasukan Harian', 'bakso tahu', 2000000.00);
+(1, '2025-04-28', 'Pengeluaran Harian', 'somay', 1000000000.00),
+(2, '2025-04-28', 'Pemasukan Harian', 'bakso', 10000000.00);
 
 -- --------------------------------------------------------
 
@@ -154,8 +128,7 @@ CREATE TABLE `pelanggan` (
 --
 
 INSERT INTO `pelanggan` (`id_pelanggan`, `nama_pelanggan`, `no_hp`, `alamat`, `perusahaan`) VALUES
-(2, 'kafe1', '12345', 'bogor', 'ceriamandiri'),
-(3, '3', '6757', 'hjgj', 'gkjh');
+(2, 'kafe1', '12345', 'bogor', 'ceriamandiri');
 
 -- --------------------------------------------------------
 
@@ -266,13 +239,13 @@ ALTER TABLE `karyawan`
 -- AUTO_INCREMENT untuk tabel `keuangan`
 --
 ALTER TABLE `keuangan`
-  MODIFY `id_keuangan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id_keuangan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `supplier`

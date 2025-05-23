@@ -22,6 +22,8 @@ import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.text.DecimalFormat;
+
 
 
 public class Form_Home extends javax.swing.JPanel {
@@ -64,7 +66,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
     }
 
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengluaran Harian", "Keterangan"}, 0
+        new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengeluaran Harian", "Keterangan"}, 0
     );
     tblkeuangan.setModel(model);
 
@@ -147,7 +149,8 @@ try {
 
         // Ganti dengan nama class model keuangan kamu
       ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, keterangan, jumlah);
-        model.addRow(data.toRowTable());
+        model.insertRow(0, data.toRowTable());
+
     }
 
 } catch (SQLException e) {
@@ -595,7 +598,7 @@ if (keyword.isEmpty()) {
     return;
 }   
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengluaran Harian", "Keterangan"}, 0
+            new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengeluaran Harian", "Keterangan"}, 0
         );
         tblkeuangan.setModel(model);
 
@@ -660,10 +663,21 @@ String tipe = tblkeuangan.getValueAt(i, 2).toString();
 String keterangan = tblkeuangan.getValueAt(i, 5).toString();
 
 double jumlah = 0;
-if (tipe.equals("Pemasukan Harian")) {
-    jumlah = Double.parseDouble(tblkeuangan.getValueAt(i, 3).toString());
-} else if (tipe.equals("Pengluaran Harian")) {
-    jumlah = Double.parseDouble(tblkeuangan.getValueAt(i, 4).toString());
+
+try {
+    String jumlahText = "";
+    if (tipe.equals("Pemasukan Harian")) {
+        jumlahText = tblkeuangan.getValueAt(i, 3).toString();
+    } else if (tipe.equals("Pengeluaran Harian")) {
+        jumlahText = tblkeuangan.getValueAt(i, 4).toString();
+    }
+
+    // Hapus "Rp", titik, koma (jika ada), dan spasi agar bisa diparse sebagai double
+    jumlahText = jumlahText.replace("Rp", "").replace(".", "").replace(",", "").replace(" ", "");
+    jumlah = Double.parseDouble(jumlahText);
+} catch (Exception e) {
+    e.printStackTrace();
+    jumlah = 0;
 }
 
 // Set nilai ke form input
@@ -675,8 +689,12 @@ try {
 }
 
 jComboBox1.setSelectedItem(tipe);
-jTextField1.setText(String.valueOf(jumlah));
+DecimalFormat df = new DecimalFormat("#,###");
+df.setGroupingUsed(true);
+jTextField1.setText(df.format(jumlah));
+
 jTextField3.setText(keterangan);
+
 
 
 try {

@@ -252,9 +252,6 @@ try {
             }
         });
         jScrollPane1.setViewportView(tblkeuangan);
-        if (tblkeuangan.getColumnModel().getColumnCount() > 0) {
-            tblkeuangan.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
 
         t_cari.setToolTipText("");
         t_cari.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -440,7 +437,7 @@ try {
     private void btnsaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsaveActionPerformed
 // Ambil data dari input field
 String jenisTransaksi = jComboBox1.getSelectedItem().toString();
-String inputJumlah = jTextField1.getText().trim();
+String inputJumlah = jTextField1.getText();
 String keterangan = jTextField3.getText().trim();
 
 if (jDateChooser1.getDate() == null) {

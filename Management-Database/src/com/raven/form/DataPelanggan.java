@@ -88,8 +88,8 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table1 = new com.raven.swing.table.Table();
-        jTextField5 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        txtsearch = new javax.swing.JTextField();
+        btnsearch = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -127,7 +127,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
             },
             new String [] {
-                "ID","Name", "Perusahaan","No Telepon", "Alamat"
+                "ID","Nama", "Perusahaan","No Telepon", "Alamat"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -138,22 +138,24 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                 return canEdit [columnIndex];
             }
         });
+        table1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(table1);
-        if (table1.getColumnModel().getColumnCount() > 0) {
-            table1.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
 
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        txtsearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                txtsearchActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Search");
-        jButton4.setToolTipText("");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnsearch.setText("Search");
+        btnsearch.setToolTipText("");
+        btnsearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnsearchActionPerformed(evt);
             }
         });
 
@@ -168,9 +170,9 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
+                        .addComponent(btnsearch)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -179,14 +181,14 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                    .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnsearch))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 512, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
-        jLabel3.setText("INPUT PELANGGAN");
+        jLabel3.setText("NAMA PELANGGAN");
 
         jLabel6.setText("NO TELP");
 
@@ -423,6 +425,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
         int result = ps.executeUpdate();
         if (result > 0) {
             JOptionPane.showMessageDialog(null, "Data berhasil diperbarui!");
+            ShowData();
             resetForm();           // Kosongkan form
             initTableData();       // Refresh tabel
         } else {
@@ -442,22 +445,110 @@ private void resetForm() {
     txtperusahaan.setText("");
 
     }//GEN-LAST:event_btneditActionPerformed
+public void ShowData() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Nama");
+        model.addColumn("Perusahaan");
+        model.addColumn("No Telepon");
+        model.addColumn("Alamat");
+        
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+        try {
+            String sql = "SELECT * FROM pelanggan";
+            Connection conn = konek.getConnection();
+            Statement stm = conn.createStatement();
+            ResultSet res = stm.executeQuery(sql);
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+            while (res.next()) {
+                model.addRow(new Object[]{
+                    res.getString("Nama"),
+                    res.getString("Perusahaan"),
+                    res.getString("No Telepon"),
+                    res.getString("Alamat"),
+                });
+            }
+
+            table1.setModel(model);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Gagal menampilkan data: " + e.getMessage());
+        }
+    }
+    private void txtsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_txtsearchActionPerformed
+
+    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
+        String keyword = txtsearch.getText().trim();
+
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan kata kunci pencarian terlebih dahulu.");
+        return;
+    }
+
+    DefaultTableModel model = new DefaultTableModel();
+    model.addColumn("Nama");
+    model.addColumn("Perusahaan");
+    model.addColumn("No Telepon");
+    model.addColumn("Alamat");
+
+    try {
+        String sql = "SELECT * FROM pelanggan WHERE "
+                   + "nama_pelanggan LIKE ? OR "
+                   + "perusahaan LIKE ? OR "
+                   + "no_hp LIKE ? OR "
+                   + "alamat LIKE ?";
+        
+        Connection conn = konek.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        String searchPattern = "%" + keyword + "%";
+
+        // Set semua kolom dengan pola LIKE
+        for (int i = 1; i <= 4; i++) {
+            ps.setString(i, searchPattern);
+        }
+
+        ResultSet res = ps.executeQuery();
+        boolean found = false;
+
+        while (res.next()) {
+            found = true;
+            model.addRow(new Object[] {
+                res.getString("nama_pelanggan"),
+                res.getString("perusahaan"),
+                res.getString("no_hp"),
+                res.getString("alamat")
+            });
+        }
+
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "Tidak ada data yang cocok dengan kata kunci.");
+        }
+
+        table1.setModel(model);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
+    }
+    }//GEN-LAST:event_btnsearchActionPerformed
+
+    private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
+        int selectedRow = table1.getSelectedRow();
+        if (selectedRow >= 0) {
+            txtnama.setText(table1.getValueAt(selectedRow, 1).toString());
+            txtperusahaan.setText(table1.getValueAt(selectedRow, 2).toString());
+            txtnotel.setText(table1.getValueAt(selectedRow, 3).toString());
+            txtalamat.setText(table1.getValueAt(selectedRow, 4).toString());
+        }
+    }//GEN-LAST:event_table1MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndelet;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
+    private javax.swing.JButton btnsearch;
     private com.raven.component.Card card1;
     private com.raven.component.Card card2;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -470,11 +561,11 @@ private void resetForm() {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField5;
     private com.raven.swing.table.Table table1;
     private javax.swing.JTextField txtalamat;
     private javax.swing.JTextField txtnama;
     private javax.swing.JTextField txtnotel;
     private javax.swing.JTextField txtperusahaan;
+    private javax.swing.JTextField txtsearch;
     // End of variables declaration//GEN-END:variables
 }

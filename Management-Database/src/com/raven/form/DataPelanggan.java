@@ -37,7 +37,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
     try {
         conn = konek.getConnection();
-        String sql = "SELECT id_pelanggan,Perusahaan, nama_pelanggan,no_hp, alamat FROM pelanggan";
+        String sql = "SELECT id_pelanggan,nama_pelanggan, alamat, no_hp, perusahaan FROM pelanggan";
         ps = conn.prepareStatement(sql);
         rs = ps.executeQuery();
         while (rs.next()) {
@@ -45,7 +45,8 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             String nama = rs.getString("nama_pelanggan");
             String kontak = rs.getString("no_hp");
             String alamats = rs.getString("alamat");
-            String perus = rs.getString("Perusahaan");
+            String perus = rs.getString("perusahaan");
+            
             
             
 
@@ -55,7 +56,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
     } catch (SQLException e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Gagal mengambil data barang dari database.");
+        JOptionPane.showMessageDialog(null, "Gagal mengambil data dari database.");
     } finally {
         try {
             if (rs != null) rs.close();

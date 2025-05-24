@@ -28,6 +28,10 @@ public class ModelDataPelanggan {
         
     }
 
+    public ModelDataPelanggan(String id, String nama, String alamat, String kontak, String perusahaan, String keterangan) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     
     public String getId_Pelanggan() {
         return Id_Pelanggan;

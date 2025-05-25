@@ -38,7 +38,7 @@ public class DataSupplier extends javax.swing.JPanel {
 
     try {
         conn = konek.getConnection();
-        String sql = "SELECT id_supplier, nama_supplier, perusahaan, no_hp, alamat, keterangan FROM supplier";
+        String sql = "SELECT id_supplier, nama_supplier, perusahaan, no_hp, alamat, keterangan FROM supplier ORDER BY id_supplier DESC";
         ps = conn.prepareStatement(sql);
         rs = ps.executeQuery();
         while (rs.next()) {

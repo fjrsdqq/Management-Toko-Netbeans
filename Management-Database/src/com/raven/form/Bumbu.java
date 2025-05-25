@@ -547,36 +547,38 @@ try {
 
     private void tblbumbuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbumbuMouseClicked
 // Ambil data dari tabel
-int i = tblbumbu.getSelectedRow();
+int selectedRow = tblbumbu.getSelectedRow();
 
-String id = tblbumbu.getValueAt(i, 0).toString(); // Jika dibutuhkan
-String nama = tblbumbu.getValueAt(i, 1).toString();
-String tanggal = tblbumbu.getValueAt(i, 2).toString();
-String stokText = tblbumbu.getValueAt(i, 3).toString();
-String keterangan = tblbumbu.getValueAt(i, 4).toString();
+if (selectedRow != -1) {
+    // Ambil data dari tabel berdasarkan index kolom
+    String id = tblbumbu.getValueAt(selectedRow, 0).toString(); // Jika dibutuhkan
+    String nama = tblbumbu.getValueAt(selectedRow, 1).toString();
+    String tanggal = tblbumbu.getValueAt(selectedRow, 2).toString();
+    String stokText = tblbumbu.getValueAt(selectedRow, 3).toString();
+    String keterangan = tblbumbu.getValueAt(selectedRow, 4).toString();
 
-int stok = 0;
-try {
-    // Bersihkan data stok dari karakter yang tidak perlu
-    stokText = stokText.replaceAll("[^\\d]", ""); // hanya angka
-    stok = Integer.parseInt(stokText);
-} catch (Exception e) {
-    e.printStackTrace();
-    stok = 0;
+    // Parsing stok dari teks ke angka
+    int stok = 0;
+    try {
+        stokText = stokText.replaceAll("[^\\d]", ""); // hanya ambil angka
+        stok = Integer.parseInt(stokText);
+    } catch (Exception e) {
+        e.printStackTrace();
+        stok = 0;
+    }
+
+    // Tampilkan data ke input field
+    txtNama.setText(nama);
+    try {
+        java.util.Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        txtTanggal.setDate(date);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    txtStok.setText(String.valueOf(stok));
+    txtKeterangan.setText(keterangan);
 }
 
-// Set nilai ke form input
-txtNama.setText(nama);
-
-try {
-    java.util.Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
-    txtTanggal.setDate(date);
-} catch (Exception e) {
-    e.printStackTrace();
-}
-
-txtStok.setText(String.valueOf(stok));
-txtKeterangan.setText(keterangan);
         // TODO add your handling code here:
     }//GEN-LAST:event_tblbumbuMouseClicked
 

@@ -37,7 +37,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
     try {
         conn = konek.getConnection();
-        String sql = "SELECT id_pelanggan,nama_pelanggan, alamat, no_hp, perusahaan FROM pelanggan";
+        String sql = "SELECT id_pelanggan,nama_pelanggan, alamat, no_hp, perusahaan FROM pelanggan ORDER BY id_pelanggan DESC";
         ps = conn.prepareStatement(sql);
         rs = ps.executeQuery();
         while (rs.next()) {

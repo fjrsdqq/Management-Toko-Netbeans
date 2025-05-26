@@ -1,63 +1,157 @@
 package com.raven.form;
 
+import com.raven.model.ModelBumbu;
 import com.raven.dialog.Message;
 import com.raven.main.Main;
+import com.raven.model.ModelCard;
+import com.raven.model.ModelDataPelanggan;
 import com.raven.model.ModelStudent;
+import com.raven.swing.icon.GoogleMaterialDesignIcons;
+import com.raven.swing.icon.IconFontSwing;
 import com.raven.swing.table.EventAction;
+import java.awt.Color;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.text.DecimalFormat;
+
+import javax.swing.JOptionPane;
 
 public class Bumbu extends javax.swing.JPanel {
+com.raven.component.koneksi konek = new com.raven.component.koneksi();
+
 
     public Bumbu() {
         initComponents();
-        table1.fixTable(jScrollPane1);
+
+        tblbumbu.fixTable(jScrollPane1);
         setOpaque(false);
         initData();
     }
 
-    private void initData() {
-        initTableData();
+        private void initData() {
+    initTableData();
+    t_cari.getDocument().addDocumentListener(new DocumentListener() {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            performSearch();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            performSearch();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            performSearch();
+        }
+    });
+}
+
+private void performSearch() {
+    String keyword = t_cari.getText().trim();
+
+    if (keyword.isEmpty()) {
+        initTableData(); // Menampilkan semua data jika input kosong
+        return;
     }
 
-    private void initTableData() {
-        EventAction eventAction = new EventAction() {
-            @Override
-            public void delete(ModelStudent student) {
-                if (showMessage("Delete Student : " + student.getName())) {
-                    System.out.println("User click OK");
-                } else {
-                    System.out.println("User click Cancel");
-                }
-            }
+    // ✅ Kolom header disesuaikan
+    DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
+    );
+    tblbumbu.setModel(model);
 
-            @Override
-            public void update(ModelStudent student) {
-                if (showMessage("Update Student : " + student.getName())) {
-                    System.out.println("User click OK");
-                } else {
-                    System.out.println("User click Cancel");
-                }
-            }
-        };
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile.jpg")), "Jonh", "Male", "Java", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile1.jpg")), "Dara", "Male", "C++", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
-        table1.addRow(new ModelStudent(new ImageIcon(getClass().getResource("/com/raven/icon/profile2.jpg")), "Bora", "Male", "C#", 300).toRowTable(eventAction));
+    try {
+        Connection conn = konek.getConnection();
+        String sql = "SELECT * FROM barang WHERE jenis_bahan='Bumbu' AND " +
+                     "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR jumlah_stock LIKE ?)";
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        for (int i = 1; i <= 5; i++) {
+            ps.setString(i, "%" + keyword + "%");
+        }
+
+        ResultSet rs = ps.executeQuery();
+        int rowCount = 0;
+
+        while (rs.next()) {
+            rowCount++;
+            ModelBumbu data = new ModelBumbu(
+                rs.getInt("id_barang"),
+                rs.getString("nama_bahan"),
+                rs.getInt("jumlah_stock"),
+                rs.getString("tanggal"),
+                rs.getString("keterangan")
+            );
+            model.addRow(data.toRowTable());
+        }
+
+        if (rowCount == 0) {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+        }
+
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
     }
-    private boolean showMessage(String message) {
-        Message obj = new Message(Main.getFrames()[0], true);
-        obj.showMessage(message);
-        return obj.isOk();
+}
+private void resetForm() {
+    txtNama.setText("");
+   txtTanggal.setDate(null);
+   txtStok.setText("");
+    txtKeterangan.setText("");
+}
+private void initTableData() {
+    DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
+    );
+    tblbumbu.setModel(model);
+
+    try {
+        Connection conn = konek.getConnection();
+        String sql = "SELECT * FROM barang WHERE jenis_bahan='Bumbu'";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            ModelBumbu data = new ModelBumbu(
+                rs.getInt("id_barang"),
+                rs.getString("nama_bahan"),
+                rs.getInt("jumlah_stock"),
+                rs.getString("tanggal"),
+                rs.getString("keterangan")
+            );
+            model.insertRow(0, data.toRowTable());
+        }
+
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Gagal mengambil data bumbu dari database.");
     }
+}
+
+
+
+       
+    
+   
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -67,24 +161,24 @@ public class Bumbu extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        table1 = new com.raven.swing.table.Table();
-        jTextField4 = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
+        tblbumbu = new com.raven.swing.table.Table();
+        t_cari = new javax.swing.JTextField();
+        btnsearch = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        txtTanggal = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtNama = new javax.swing.JTextField();
+        txtStok = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        txtKeterangan = new javax.swing.JTextField();
+        btnsave = new javax.swing.JButton();
+        btnedit = new javax.swing.JButton();
+        btndelete = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(4, 72, 210));
@@ -97,12 +191,12 @@ public class Bumbu extends javax.swing.JPanel {
         jLabel5.setText("Data Bumbu");
         jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 1));
 
-        table1.setModel(new javax.swing.table.DefaultTableModel(
+        tblbumbu.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Nama Bumbu", "Tnggal", "Stok", "Keterangan"
+                "ID",  "Nama Bumbu", "Tanggal", "Stok", "Keterangan"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -113,12 +207,22 @@ public class Bumbu extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(table1);
-        if (table1.getColumnModel().getColumnCount() > 0) {
-            table1.getColumnModel().getColumn(0).setPreferredWidth(150);
+        tblbumbu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblbumbuMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblbumbu);
+        if (tblbumbu.getColumnModel().getColumnCount() > 0) {
+            tblbumbu.getColumnModel().getColumn(0).setPreferredWidth(150);
         }
 
-        jButton4.setText("Search");
+        btnsearch.setText("Search");
+        btnsearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnsearchActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -127,9 +231,9 @@ public class Bumbu extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4))
+                .addComponent(btnsearch))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1024, Short.MAX_VALUE)
@@ -141,8 +245,8 @@ public class Bumbu extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
+                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnsearch))
                 .addGap(0, 0, 0)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                 .addContainerGap())
@@ -156,15 +260,15 @@ public class Bumbu extends javax.swing.JPanel {
 
         jLabel9.setText(":");
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtNama.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtNamaActionPerformed(evt);
             }
         });
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        txtStok.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                txtStokActionPerformed(evt);
             }
         });
 
@@ -176,30 +280,30 @@ public class Bumbu extends javax.swing.JPanel {
 
         jLabel11.setText(":");
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtKeterangan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                txtKeteranganActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Save");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnsave.setText("Save");
+        btnsave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnsaveActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Edit");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnedit.setText("Edit");
+        btnedit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btneditActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Hapus");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btndelete.setText("Hapus");
+        btndelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btndeleteActionPerformed(evt);
             }
         });
 
@@ -228,15 +332,15 @@ public class Bumbu extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(jButton1)
+                                        .addComponent(btnsave)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jButton2))
-                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(btnedit))
+                                    .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(12, 12, 12)
-                                .addComponent(jButton3))
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField3)))
+                                .addComponent(btndelete))
+                            .addComponent(txtStok)
+                            .addComponent(txtNama)
+                            .addComponent(txtKeterangan)))
                     .addComponent(jLabel1))
                 .addGap(167, 167, 167))
         );
@@ -252,63 +356,296 @@ public class Bumbu extends javax.swing.JPanel {
                         .addComponent(jLabel9))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel10)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtStok, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtKeterangan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(btnsave)
+                    .addComponent(btnedit)
+                    .addComponent(btndelete))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtNamaActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void txtStokActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStokActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_txtStokActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtKeteranganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKeteranganActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtKeteranganActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnsaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsaveActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+   String nama = txtNama.getText().trim();
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+String stokText = txtStok.getText().trim();
+String keterangan = txtKeterangan.getText().trim();
+
+if (txtTanggal.getDate() == null) {
+    JOptionPane.showMessageDialog(this, "Silakan pilih tanggal terlebih dahulu.");
+    return;
+}
+
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+String tanggal = sdf.format(txtTanggal.getDate());
+
+
+if (nama.isEmpty() || tanggal.isEmpty() || stokText.isEmpty() || keterangan.isEmpty()) {
+    JOptionPane.showMessageDialog(this, "Semua field harus diisi.");
+    return;
+}
+
+int jumlah;
+try {
+    jumlah = Integer.parseInt(stokText);
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Stok harus berupa angka!");
+    return;
+}
+
+try (Connection conn = konek.getConnection()) {
+    String sql = "INSERT INTO barang (nama_bahan, jenis_bahan, jumlah_stock, keterangan, tanggal) VALUES (?, ?, ?, ?, ?)";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, nama);
+    ps.setString(2, "Bumbu"); // Ini kunci utama: set 'Bumbu'
+    ps.setInt(3, jumlah);
+    ps.setString(4, keterangan);
+    ps.setString(5, tanggal);
+
+    int result = ps.executeUpdate();
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Data bumbu berhasil disimpan.");
+        txtNama.setText("");
+        txtStok.setText("");
+        txtKeterangan.setText("");
+        txtTanggal.setDate(null);
+        initTableData(); // refresh tabel
+    } else {
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan data.");
+    }
+} catch (SQLException e) {
+    JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan: " + e.getMessage());
+}
+
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btnsaveActionPerformed
+
+    private void btneditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditActionPerformed
+int selectedRow = tblbumbu.getSelectedRow();
+if (selectedRow == -1) {
+    JOptionPane.showMessageDialog(this, "Pilih data yang ingin diedit terlebih dahulu.");
+    return;
+}
+
+// Ambil ID dari baris tabel yang dipilih
+String id = tblbumbu.getValueAt(selectedRow, 0).toString();
+
+// Ambil nilai dari form input
+String namaBumbu = txtNama.getText().trim();
+Date tanggalDate = txtTanggal.getDate(); // txtTanggal adalah JDateChooser
+String stokText = txtStok.getText().trim();
+String keterangan = txtKeterangan.getText().trim();
+
+
+// Validasi input
+if (namaBumbu.isEmpty() || tanggalDate == null || stokText.isEmpty() || keterangan.isEmpty()) {
+    JOptionPane.showMessageDialog(this, "Semua field harus diisi.");
+    return;
+}
+
+// Format tanggal
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+String tanggal = sdf.format(tanggalDate);
+
+try (Connection conn = konek.getConnection()) {
+    String sql = "UPDATE barang SET nama_bahan = ?, tanggal = ?, jumlah_stock = ?, keterangan = ? WHERE id_barang = ?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, namaBumbu);
+    ps.setString(2, tanggal);
+    ps.setInt(3, Integer.parseInt(stokText));
+    ps.setString(4, keterangan);
+    ps.setString(5, id);
+
+    int result = ps.executeUpdate();
+    if (result > 0) {
+        JOptionPane.showMessageDialog(this, "Data bumbu berhasil diperbarui!");
+        resetForm();         // Kosongkan form input
+        initTableData();     // Refresh tabel
+    } else {
+        JOptionPane.showMessageDialog(this, "Tidak ada data yang diperbarui.");
+    }
+} catch (SQLException e) {
+    JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+    e.printStackTrace();
+} catch (NumberFormatException nfe) {
+    JOptionPane.showMessageDialog(this, "Stok harus berupa angka.");
+}
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btneditActionPerformed
+
+    private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
+int selectedRow = tblbumbu.getSelectedRow();
+if (selectedRow == -1) {
+    JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus terlebih dahulu.");
+    return;
+}
+
+// Ambil ID dari kolom pertama (id_barang)
+String id = tblbumbu.getValueAt(selectedRow, 0).toString();
+
+int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+if (confirm != JOptionPane.YES_OPTION) {
+    return;
+}
+
+try {
+    Connection conn = konek.getConnection();
+    String sql = "DELETE FROM barang WHERE id_barang = ?";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ps.setString(1, id);
+
+    int affectedRows = ps.executeUpdate();
+    if (affectedRows > 0) {
+        JOptionPane.showMessageDialog(this, "Data berhasil dihapus.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Data tidak ditemukan atau gagal dihapus.");
+    }
+
+    ps.close();
+    conn.close();
+
+    initTableData(); // refresh tabel
+    resetForm();     // kosongkan form
+} catch (Exception e) {
+    e.printStackTrace();
+    JOptionPane.showMessageDialog(this, "Gagal menghapus data.");
+}
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btndeleteActionPerformed
+
+    private void tblbumbuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblbumbuMouseClicked
+// Ambil data dari tabel
+int selectedRow = tblbumbu.getSelectedRow();
+
+if (selectedRow != -1) {
+    // Ambil data dari tabel berdasarkan index kolom
+    String id = tblbumbu.getValueAt(selectedRow, 0).toString(); // Jika dibutuhkan
+    String nama = tblbumbu.getValueAt(selectedRow, 1).toString();
+    String tanggal = tblbumbu.getValueAt(selectedRow, 2).toString();
+    String stokText = tblbumbu.getValueAt(selectedRow, 3).toString();
+    String keterangan = tblbumbu.getValueAt(selectedRow, 4).toString();
+
+    // Parsing stok dari teks ke angka
+    int stok = 0;
+    try {
+        stokText = stokText.replaceAll("[^\\d]", ""); // hanya ambil angka
+        stok = Integer.parseInt(stokText);
+    } catch (Exception e) {
+        e.printStackTrace();
+        stok = 0;
+    }
+
+    // Tampilkan data ke input field
+    txtNama.setText(nama);
+    try {
+        java.util.Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
+        txtTanggal.setDate(date);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    txtStok.setText(String.valueOf(stok));
+    txtKeterangan.setText(keterangan);
+}
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblbumbuMouseClicked
+
+    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
+btnsearch.addActionListener(new java.awt.event.ActionListener() {
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        String keyword = t_cari.getText().trim();
+        if (keyword.isEmpty()) {
+            initTableData(); // Tampilkan semua data jika field pencarian kosong
+            return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
+        );
+        tblbumbu.setModel(model);
+
+        try {
+            Connection conn = konek.getConnection();
+            String sql = "SELECT * FROM barang WHERE " +
+                         "id_barang LIKE ? OR " +
+                         "nama_bahan LIKE ? OR " +
+                         "tanggal LIKE ? OR " +
+                         "jumlah_stock LIKE ? OR " +
+                         "keterangan LIKE ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            for (int i = 1; i <= 5; i++) {
+                ps.setString(i, "%" + keyword + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            int rowCount = 0;
+
+            while (rs.next()) {
+                rowCount++;
+                String id = rs.getString("id_barang");
+                String nama = rs.getString("nama_bahan");
+                String tanggal = rs.getString("tanggal");
+                int stok = rs.getInt("jumlah_stock");
+                String keterangan = rs.getString("keterangan");
+
+                model.addRow(new Object[]{id, nama, tanggal, stok, keterangan});
+            }
+
+            if (rowCount == 0) {
+                JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
+        }
+    }
+});
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnsearchActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JButton btndelete;
+    private javax.swing.JButton btnedit;
+    private javax.swing.JButton btnsave;
+    private javax.swing.JButton btnsearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -321,10 +658,11 @@ public class Bumbu extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private com.raven.swing.table.Table table1;
+    private javax.swing.JTextField t_cari;
+    private com.raven.swing.table.Table tblbumbu;
+    private javax.swing.JTextField txtKeterangan;
+    private javax.swing.JTextField txtNama;
+    private javax.swing.JTextField txtStok;
+    private com.toedter.calendar.JDateChooser txtTanggal;
     // End of variables declaration//GEN-END:variables
 }

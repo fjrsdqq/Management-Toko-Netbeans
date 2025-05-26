@@ -163,7 +163,6 @@ private void initTableData() {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblbumbu = new com.raven.swing.table.Table();
         t_cari = new javax.swing.JTextField();
-        btnsearch = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         txtTanggal = new com.toedter.calendar.JDateChooser();
@@ -217,10 +216,9 @@ private void initTableData() {
             tblbumbu.getColumnModel().getColumn(0).setPreferredWidth(150);
         }
 
-        btnsearch.setText("Search");
-        btnsearch.addActionListener(new java.awt.event.ActionListener() {
+        t_cari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnsearchActionPerformed(evt);
+                t_cariActionPerformed(evt);
             }
         });
 
@@ -229,14 +227,14 @@ private void initTableData() {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnsearch))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1024, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1024, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -245,9 +243,8 @@ private void initTableData() {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnsearch))
-                .addGap(0, 0, 0)
+                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(1, 1, 1)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -300,7 +297,7 @@ private void initTableData() {
             }
         });
 
-        btndelete.setText("Hapus");
+        btndelete.setText("Delete");
         btndelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btndeleteActionPerformed(evt);
@@ -582,70 +579,14 @@ if (selectedRow != -1) {
         // TODO add your handling code here:
     }//GEN-LAST:event_tblbumbuMouseClicked
 
-    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
-btnsearch.addActionListener(new java.awt.event.ActionListener() {
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-        String keyword = t_cari.getText().trim();
-        if (keyword.isEmpty()) {
-            initTableData(); // Tampilkan semua data jika field pencarian kosong
-            return;
-        }
-
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
-        );
-        tblbumbu.setModel(model);
-
-        try {
-            Connection conn = konek.getConnection();
-            String sql = "SELECT * FROM barang WHERE " +
-                         "id_barang LIKE ? OR " +
-                         "nama_bahan LIKE ? OR " +
-                         "tanggal LIKE ? OR " +
-                         "jumlah_stock LIKE ? OR " +
-                         "keterangan LIKE ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-
-            for (int i = 1; i <= 5; i++) {
-                ps.setString(i, "%" + keyword + "%");
-            }
-
-            ResultSet rs = ps.executeQuery();
-            int rowCount = 0;
-
-            while (rs.next()) {
-                rowCount++;
-                String id = rs.getString("id_barang");
-                String nama = rs.getString("nama_bahan");
-                String tanggal = rs.getString("tanggal");
-                int stok = rs.getInt("jumlah_stock");
-                String keterangan = rs.getString("keterangan");
-
-                model.addRow(new Object[]{id, nama, tanggal, stok, keterangan});
-            }
-
-            if (rowCount == 0) {
-                JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
-            }
-
-            rs.close();
-            ps.close();
-            conn.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
-        }
-    }
-});
+    private void t_cariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_t_cariActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnsearchActionPerformed
+    }//GEN-LAST:event_t_cariActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
-    private javax.swing.JButton btnsearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

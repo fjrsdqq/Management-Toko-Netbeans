@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.sql.*;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 public class DataPelanggan extends javax.swing.JPanel {
@@ -25,8 +27,78 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
     private void initData() {
         initCardData();
         initTableData();
-    }
+        txtsearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
 
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
+    }
+    
+    private void performSearch() {
+        String keyword = txtsearch.getText().trim();
+
+        if (keyword.isEmpty()) {
+            initTableData(); // Menampilkan semua data jika input kosong
+            return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"ID", "Nama", "Perusahaan", "No Telepon", "Alamat"}, 0
+        );
+        table1.setModel(model);
+
+        try {
+            Connection conn = konek.getConnection();
+            String sql = "SELECT * FROM pelanggan WHERE "
+                       + "nama_pelanggan LIKE ? OR "
+                       + "perusahaan LIKE ? OR "
+                       + "no_hp LIKE ? OR "
+                       + "alamat LIKE ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            for (int i = 1; i <= 4; i++) {
+                ps.setString(i, "%" + keyword + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            int rowCount = 0;
+
+            while (rs.next()) {
+                rowCount++;
+                ModelDataPelanggan data = new ModelDataPelanggan(
+                    rs.getString("id_pelanggan"),
+                    rs.getString("nama_pelanggan"),
+                    rs.getString("no_hp"),
+                    rs.getString("alamat"),
+                    rs.getString("perusahaan")
+                );
+                model.addRow(data.toRowTable());
+            }
+
+            if (rowCount == 0) {
+                JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
+        }
+    }
+    
     private void initTableData() {
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
     model.setRowCount(0);
@@ -90,7 +162,6 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
         jScrollPane1 = new javax.swing.JScrollPane();
         table1 = new com.raven.swing.table.Table();
         txtsearch = new javax.swing.JTextField();
-        btnsearch = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -111,7 +182,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(4, 72, 210));
-        jLabel1.setText("Dashboard / Home");
+        jLabel1.setText("Pelanggan");
 
         card2.setBackground(new java.awt.Color(10, 30, 214));
         card2.setColorGradient(new java.awt.Color(72, 111, 252));
@@ -152,14 +223,6 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             }
         });
 
-        btnsearch.setText("Search");
-        btnsearch.setToolTipText("");
-        btnsearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnsearchActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -170,10 +233,8 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1645, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnsearch)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -182,8 +243,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnsearch))
+                    .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 512, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -244,33 +304,34 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel8))
-                                .addGap(35, 35, 35)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtnotel, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
-                                    .addComponent(txtnama)
-                                    .addComponent(txtperusahaan)
-                                    .addComponent(txtalamat)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel3)
-                                .addComponent(jLabel1)))
-                        .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnedit)
-                            .addComponent(btndelet)
-                            .addComponent(btnsave))
-                        .addGap(78, 78, 78)
-                        .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
-                        .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel7)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel8))
+                                        .addGap(35, 35, 35)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtnotel, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                                            .addComponent(txtnama)
+                                            .addComponent(txtperusahaan)
+                                            .addComponent(txtalamat)))
+                                    .addComponent(jLabel3))
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnedit)
+                                    .addComponent(btndelet)
+                                    .addComponent(btnsave))
+                                .addGap(78, 78, 78)
+                                .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel1))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -311,7 +372,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                             .addComponent(jLabel8)))
                     .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -381,8 +442,9 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
         JOptionPane.showMessageDialog(this, "Pelanggan berhasil dihapus.");
         ps.close();
         conn.close();
-
-        initTableData(); // refresh tabel
+        ShowData();
+        resetForm();
+        
     } catch (Exception e) {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Gagal menghapus Pelanggan.");
@@ -428,7 +490,6 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             JOptionPane.showMessageDialog(null, "Data berhasil diperbarui!");
             ShowData();
             resetForm();           // Kosongkan form
-            initTableData();       // Refresh tabel
         } else {
             JOptionPane.showMessageDialog(null, "Tidak ada data yang diperbarui.");
         }
@@ -447,92 +508,43 @@ private void resetForm() {
 
     }//GEN-LAST:event_btneditActionPerformed
 public void ShowData() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Nama");
-        model.addColumn("Perusahaan");
-        model.addColumn("No Telepon");
-        model.addColumn("Alamat");
-        
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        model.setRowCount(0); // Menghapus semua baris yang ada di tabel
+
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
         try {
-            String sql = "SELECT * FROM pelanggan";
-            Connection conn = konek.getConnection();
-            Statement stm = conn.createStatement();
-            ResultSet res = stm.executeQuery(sql);
+            conn = konek.getConnection(); // Sesuaikan ini dengan koneksi database milikmu
+            String sql = "SELECT * FROM pelanggan ORDER BY id_pelanggan DESC";
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
 
-            while (res.next()) {
-                model.addRow(new Object[]{
-                    res.getString("Nama"),
-                    res.getString("Perusahaan"),
-                    res.getString("No Telepon"),
-                    res.getString("Alamat"),
-                });
+            while (rs.next()) {
+                String id = rs.getString("id_pelanggan");
+                String nama = rs.getString("nama_pelanggan");
+                String alamat = rs.getString("alamat");
+                String nohp = rs.getString("no_hp");
+                String perusahaan = rs.getString("perusahaan");
+
+                // Tambahkan baris ke tabel
+                Object[] row = { id, nama, perusahaan, nohp, alamat};
+                model.addRow(row);
             }
 
-            table1.setModel(model);
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Gagal menampilkan data: " + e.getMessage());
-        }
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menampilkan data: " + e.getMessage());
+            e.printStackTrace();
+        } 
     }
     private void txtsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtsearchActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsearchActionPerformed
-
-    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
-        String keyword = txtsearch.getText().trim();
-
-    if (keyword.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Masukkan kata kunci pencarian terlebih dahulu.");
-        return;
-    }
-
-    DefaultTableModel model = new DefaultTableModel();
-    model.addColumn("Nama");
-    model.addColumn("Perusahaan");
-    model.addColumn("No Telepon");
-    model.addColumn("Alamat");
-
-    try {
-        String sql = "SELECT * FROM pelanggan WHERE "
-                   + "nama_pelanggan LIKE ? OR "
-                   + "perusahaan LIKE ? OR "
-                   + "no_hp LIKE ? OR "
-                   + "alamat LIKE ?";
-        
-        Connection conn = konek.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        String searchPattern = "%" + keyword + "%";
-
-        // Set semua kolom dengan pola LIKE
-        for (int i = 1; i <= 4; i++) {
-            ps.setString(i, searchPattern);
-        }
-
-        ResultSet res = ps.executeQuery();
-        boolean found = false;
-
-        while (res.next()) {
-            found = true;
-            model.addRow(new Object[] {
-                res.getString("nama_pelanggan"),
-                res.getString("perusahaan"),
-                res.getString("no_hp"),
-                res.getString("alamat")
-            });
-        }
-
-        if (!found) {
-            JOptionPane.showMessageDialog(this, "Tidak ada data yang cocok dengan kata kunci.");
-        }
-
-        table1.setModel(model);
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari: " + e.getMessage());
-    }
-    }//GEN-LAST:event_btnsearchActionPerformed
-
+    
     private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
         int selectedRow = table1.getSelectedRow();
         if (selectedRow >= 0) {
@@ -547,7 +559,6 @@ public void ShowData() {
     private javax.swing.JButton btndelet;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
-    private javax.swing.JButton btnsearch;
     private com.raven.component.Card card1;
     private com.raven.component.Card card2;
     private javax.swing.JLabel jLabel1;

@@ -2,6 +2,7 @@ package com.raven.form;
 
 import com.raven.dialog.Message;
 import com.raven.main.Main;
+import com.raven.model.ModelDataPelanggan;
 import com.raven.model.ModelDataSupplier;
 import com.raven.model.ModelStudent;
 import com.raven.swing.table.EventAction;
@@ -12,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 public class DataSupplier extends javax.swing.JPanel {
@@ -26,6 +29,78 @@ public class DataSupplier extends javax.swing.JPanel {
 
     private void initData() {
         initTableData();
+        txtsearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
+    }
+    
+    private void performSearch() {
+        String keyword = txtsearch.getText().trim();
+
+        if (keyword.isEmpty()) {
+            initTableData(); // Menampilkan semua data jika input kosong
+            return;
+        }
+
+        DefaultTableModel model = new DefaultTableModel(
+            new Object[]{"id", "Nama Supplier", "Alamat", "No Telepon", "Perusahaan", "Keterangan"}, 0
+        );
+        table1.setModel(model);
+
+        try {
+            Connection conn = konek.getConnection();
+            String sql = "SELECT * FROM supplier WHERE "
+                       + "nama_supplier LIKE ? OR "
+                       + "no_hp LIKE ? OR "
+                       + "alamat LIKE ? OR "
+                       + "perusahaan LIKE ? OR "
+                       + "keterangan LIKE ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            for (int i = 1; i <= 5; i++) {
+                ps.setString(i, "%" + keyword + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            int rowCount = 0;
+
+            while (rs.next()) {
+                rowCount++;
+                ModelDataSupplier data = new ModelDataSupplier(
+                    rs.getString("id_supplier"),
+                    rs.getString("nama_supplier"),
+                    rs.getString("no_hp"),
+                    rs.getString("alamat"),
+                    rs.getString("perusahaan"),
+                    rs.getString("keterangan")
+                );
+                model.addRow(data.toRowTable());
+            }
+
+            if (rowCount == 0) {
+                JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
+        }
     }
 
     private void initTableData() {
@@ -77,7 +152,6 @@ public class DataSupplier extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table1 = new com.raven.swing.table.Table();
-        btnsearch = new javax.swing.JButton();
         txtsearch = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -132,29 +206,19 @@ public class DataSupplier extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(table1);
 
-        btnsearch.setText("Seaarch");
-        btnsearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnsearchActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1096, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 15, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnsearch))))
+                        .addGap(739, 739, 739)
+                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1096, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 15, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,9 +226,8 @@ public class DataSupplier extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(btnsearch)
                     .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(1, 1, 1)
+                .addGap(2, 2, 2)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -403,9 +466,9 @@ public class DataSupplier extends javax.swing.JPanel {
         // Ambil data dari tabel berdasarkan index kolom
         String id = table1.getValueAt(selectedRow, 0).toString();
         String nama = table1.getValueAt(selectedRow, 1).toString();
-        String alamat = table1.getValueAt(selectedRow, 4).toString();
+        String alamat = table1.getValueAt(selectedRow, 2).toString();
         String nohp = table1.getValueAt(selectedRow, 3).toString();
-        String perusahaan = table1.getValueAt(selectedRow, 2).toString();
+        String perusahaan = table1.getValueAt(selectedRow, 4).toString();
         String keterangan = table1.getValueAt(selectedRow, 5).toString();
 
         // Tampilkan data ke input field
@@ -497,7 +560,7 @@ public class DataSupplier extends javax.swing.JPanel {
         int result = ps.executeUpdate();
         if (result > 0) {
             JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
-            ShowData();     // Refresh tabel
+            ShowData();     
             resetForm();    // Kosongkan form input (buatkan fungsi resetForm jika belum)
         } else {
             JOptionPane.showMessageDialog(this, "Gagal memperbarui data.");
@@ -505,6 +568,9 @@ public class DataSupplier extends javax.swing.JPanel {
 
         ps.close();
         conn.close();
+        
+        ShowData();
+        resetForm();
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
@@ -512,56 +578,10 @@ public class DataSupplier extends javax.swing.JPanel {
     }
     }//GEN-LAST:event_btneditActionPerformed
 
-    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
-        String keyword = txtsearch.getText().trim(); // Ambil kata kunci dari field pencarian
-
-    DefaultTableModel model = (DefaultTableModel) table1.getModel();
-    model.setRowCount(0); // Kosongkan tabel sebelum menampilkan hasil pencarian
-
-    Connection conn = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-
-    try {
-        conn = konek.getConnection();
-
-        // Query multi-kolom: LIKE untuk semua kolom
-        String sql = "SELECT id_supplier, nama_supplier, alamat, no_hp, perusahaan, keterangan FROM supplier " +
-                     "WHERE id_supplier LIKE ? OR nama_supplier LIKE ? OR alamat LIKE ? OR no_hp LIKE ? OR perusahaan LIKE ? OR keterangan LIKE ?";
-
-        ps = conn.prepareStatement(sql);
-        for (int i = 1; i <= 6; i++) {
-            ps.setString(i, "%" + keyword + "%");
-        }
-
-        rs = ps.executeQuery();
-        while (rs.next()) {
-            String id = rs.getString("id_supplier");
-            String nama = rs.getString("nama_supplier");
-            String alamat = rs.getString("alamat");
-            String nohp = rs.getString("no_hp");
-            String perusahaan = rs.getString("perusahaan");
-            String keterangan = rs.getString("keterangan");
-
-            Object[] row = { id, nama, alamat, nohp, perusahaan, keterangan };
-            model.addRow(row);
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat pencarian: " + e.getMessage());
-        e.printStackTrace();
-    }
-    }//GEN-LAST:event_btnsearchActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
-    private javax.swing.JButton btnsearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -603,7 +623,7 @@ public class DataSupplier extends javax.swing.JPanel {
 
         try {
             conn = konek.getConnection(); // Sesuaikan ini dengan koneksi database milikmu
-            String sql = "SELECT id_supplier, nama_supplier, alamat, no_hp, perusahaan, keterangan FROM supplier";
+            String sql = "SELECT * FROM supplier ORDER BY id_supplier DESC";
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
 

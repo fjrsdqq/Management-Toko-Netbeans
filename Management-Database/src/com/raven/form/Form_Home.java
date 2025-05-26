@@ -198,7 +198,6 @@ try {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblkeuangan = new com.raven.swing.table.Table();
         t_cari = new javax.swing.JTextField();
-        btnsearch = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
@@ -268,27 +267,19 @@ try {
             }
         });
 
-        btnsearch.setText("Search");
-        btnsearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnsearchActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(247, 247, 247)
-                .addComponent(t_cari)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnsearch)
-                .addGap(1004, 1004, 1004))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1042, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(316, 316, 316)
+                        .addComponent(t_cari))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1042, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(1013, 1013, 1013))
         );
         jPanel2Layout.setVerticalGroup(
@@ -296,8 +287,7 @@ try {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnsearch))
+                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
                 .addContainerGap())
@@ -340,7 +330,7 @@ try {
             }
         });
 
-        btndelete.setText("Hapus");
+        btndelete.setText("Delete");
         btndelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btndeleteActionPerformed(evt);
@@ -421,7 +411,7 @@ try {
                     .addComponent(btnedit)
                     .addComponent(btnsave)
                     .addComponent(btndelete))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(card3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -589,66 +579,6 @@ try {
         // TODO add your handling code here:
     }//GEN-LAST:event_t_cariActionPerformed
 
-    private void btnsearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsearchActionPerformed
-btnsearch.addActionListener(new java.awt.event.ActionListener() {
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-        String keyword = t_cari.getText().trim();
-if (keyword.isEmpty()) {
-    initTableData(); // Tampilkan semua data kalau pencarian kosong
-    return;
-}   
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengeluaran Harian", "Keterangan"}, 0
-        );
-        tblkeuangan.setModel(model);
-
-        try {
-            Connection conn = konek.getConnection();
-            String sql ="SELECT * FROM keuangan WHERE " +
-                 "id_keuangan LIKE ? OR " +
-                 "tanggal LIKE ? OR " +
-                 "tipe LIKE ? OR " +
-                 "keterangan LIKE ? OR " +
-                 "CAST(jumlah AS CHAR) LIKE ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-             for (int i = 1; i <= 5; i++) {
-        ps.setString(i, "%" + keyword + "%");
-    }
-           
-            ResultSet rs = ps.executeQuery();
-int rowCount = 0;
-
-while (rs.next()) {
-    rowCount++;  // Tambah hitungan hasil
-    String id = rs.getString("id_keuangan");
-    String tanggal = rs.getString("tanggal");
-    String tipe = rs.getString("tipe");
-    double jumlah = rs.getDouble("jumlah");
-    String keterangan = rs.getString("keterangan");
-
-    ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, keterangan, jumlah);
-    model.addRow(data.toRowTable());
-}
-
-if (rowCount == 0) {
-    JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
-}
-
-
-            rs.close();
-            ps.close();
-            conn.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
-        }
-    }
-});
-
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnsearchActionPerformed
-
     private void t_cariMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_t_cariMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_t_cariMouseClicked
@@ -706,7 +636,6 @@ jTextField3.setText(keterangan);
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
-    private javax.swing.JButton btnsearch;
     private com.raven.component.Card card1;
     private com.raven.component.Card card2;
     private com.raven.component.Card card3;

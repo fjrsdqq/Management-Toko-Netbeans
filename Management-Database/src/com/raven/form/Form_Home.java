@@ -657,6 +657,7 @@ if (rowCount == 0) {
 // Ambil data dari tabel
 int i = tblkeuangan.getSelectedRow();
 
+// Ambil data dari tabel
 String id = tblkeuangan.getValueAt(i, 0).toString();
 String tanggal = tblkeuangan.getValueAt(i, 1).toString();
 String tipe = tblkeuangan.getValueAt(i, 2).toString();
@@ -672,7 +673,7 @@ try {
         jumlahText = tblkeuangan.getValueAt(i, 4).toString();
     }
 
-    // Hapus "Rp", titik, koma (jika ada), dan spasi agar bisa diparse sebagai double
+    // Bersihkan teks dari simbol dan pemisah ribuan
     jumlahText = jumlahText.replace("Rp", "").replace(".", "").replace(",", "").replace(" ", "");
     jumlah = Double.parseDouble(jumlahText);
 } catch (Exception e) {
@@ -689,20 +690,12 @@ try {
 }
 
 jComboBox1.setSelectedItem(tipe);
-DecimalFormat df = new DecimalFormat("#,###");
-df.setGroupingUsed(true);
-jTextField1.setText(df.format(jumlah));
+
+// Tampilkan tanpa koma/pemisah ribuan
+jTextField1.setText(String.valueOf((long) jumlah)); // pakai (long) agar tidak tampil desimal ".0"
 
 jTextField3.setText(keterangan);
 
-
-
-try {
-    java.util.Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggal);
-    jDateChooser1.setDate(date);
-} catch (Exception e) {
-    e.printStackTrace();
-}
 
 
 

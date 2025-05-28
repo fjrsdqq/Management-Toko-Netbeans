@@ -32,7 +32,7 @@
 | Aulif Nazar Rabbani        |                   | Universitas Indraprasta PGRI              |
 | Chelseano Putra            | 202243501420      | Universitas Indraprasta PGRI              |
 | Dicky Achmad               | 202243501468      | Universitas Indraprasta PGRI              |
-| Fajar Sidik                |                   | Universitas Indraprasta PGRI              |
+| Fajar Sidik                | 202243501442      | Universitas Indraprasta PGRI              |
 |Heru                        |                   | Universitas Indraprasta PGRI              |
 | M. Ihsan Prasetyo          |                   | Universitas Indraprasta PGRI              |
 

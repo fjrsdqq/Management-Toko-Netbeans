@@ -29,7 +29,7 @@
 | Name                       |NPM                | University                                |
 |----------------------------|-------------------|-------------------------------------------|
 | Ahmad Ferdiansyah          | 202243501449      | Universitas Indraprasta PGRI              |
-| Aulif Nazar Rabbani        |                   | Universitas Indraprasta PGRI              |
+| Aulif Nazar Rabbani        | 202243501450      | Universitas Indraprasta PGRI              |
 | Chelseano Putra            | 202243501420      | Universitas Indraprasta PGRI              |
 | Dicky Achmad               | 202243501468      | Universitas Indraprasta PGRI              |
 | Fajar Sidik                | 202243501442      | Universitas Indraprasta PGRI              |

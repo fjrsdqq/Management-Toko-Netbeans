@@ -57,8 +57,8 @@
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="txtKeterangan" alignment="0" pref="250" max="32767" attributes="0"/>
                               <Component id="txtStok" alignment="0" max="32767" attributes="0"/>
-                              <Component id="txtNama" max="32767" attributes="0"/>
-                              <Component id="txtTanggal" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtTanggal" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
+                              <Component id="txtNama" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

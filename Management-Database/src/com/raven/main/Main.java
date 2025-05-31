@@ -4,7 +4,7 @@ import com.raven.component.Header;
 import com.raven.component.Menu;
 import com.raven.event.EventMenuSelected;
 import com.raven.event.EventShowPopupMenu;
-import com.raven.form.Bulanan;
+import com.raven.form.Pembelian;
 import com.raven.form.Bumbu;
 import com.raven.form.DataKaryawan;
 import com.raven.form.Form_Home;
@@ -13,8 +13,8 @@ import com.raven.form.MainForm;
 import com.raven.form.Tepung;
 import com.raven.form.DataPelanggan;
 import com.raven.form.DataSupplier;
-import com.raven.form.Harian;
-import com.raven.form.Tahunan;
+import com.raven.form.Penjualan;
+import com.raven.form.Keuangan;
 import com.raven.swing.MenuItem;
 import com.raven.swing.PopupMenu;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
@@ -75,16 +75,16 @@ public class Main extends javax.swing.JFrame {
                 case 4: // DataPelanggan
                     main.showForm(new DataPelanggan());
                     break;
-                case 5: // Keuangan
+                case 5: // Transaksi
                     switch (subMenuIndex) {
                         case 0:
-                            main.showForm(new Harian());
+                            main.showForm(new Penjualan());
                             break;
                         case 1:
-                            main.showForm(new Bulanan());
+                            main.showForm(new Pembelian());
                             break;
                         case 2:
-                            main.showForm(new Tahunan());
+                            main.showForm(new Keuangan());
                             break;
                     }
                     break;

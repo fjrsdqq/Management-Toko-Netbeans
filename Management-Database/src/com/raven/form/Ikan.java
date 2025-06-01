@@ -175,7 +175,7 @@ public class Ikan extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(4, 72, 210));
-        jLabel1.setText("Dashboard / Home");
+        jLabel1.setText("Ikan");
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 

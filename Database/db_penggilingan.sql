@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 01 Jun 2025 pada 04.55
+-- Waktu pembuatan: 02 Jun 2025 pada 06.57
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -75,18 +75,11 @@ INSERT INTO `barang` (`id_barang`, `nama_bahan`, `jenis_bahan`, `jumlah_stock`, 
 CREATE TABLE `karyawan` (
   `id_karyawan` int(11) NOT NULL,
   `nama_karyawan` varchar(100) NOT NULL,
-  `jabatan` varchar(100) NOT NULL,
+  `jabatan` enum('Operator Penggilingan Molen','Operator Penggilingan Kasar','Operator Pemotongan Ikan','Admin') DEFAULT NULL,
   `gaji` decimal(15,2) NOT NULL,
   `no_hp` varchar(20) DEFAULT NULL,
   `alamat` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `karyawan`
---
-
-INSERT INTO `karyawan` (`id_karyawan`, `nama_karyawan`, `jabatan`, `gaji`, `no_hp`, `alamat`) VALUES
-(1, 'Budi', 'Kasir', 3500000.00, '082234567890', 'Jl. Kenanga No.2');
 
 -- --------------------------------------------------------
 
@@ -156,7 +149,8 @@ CREATE TABLE `penjualan` (
   `id_pelanggan` int(11) DEFAULT NULL,
   `tanggal` date NOT NULL,
   `total` decimal(15,2) NOT NULL,
-  `keterangan` text DEFAULT NULL
+  `keterangan` text DEFAULT NULL,
+  `kategori` enum('Perusahaan','Perorangan') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

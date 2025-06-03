@@ -89,6 +89,19 @@ public class Main extends javax.swing.JFrame {
                     }
                     break;
                 case 6: // Log Out
+                    switch (subMenuIndex) {
+                        case 0:
+                            main.showForm(new Penjualan());
+                            break;
+                        case 1:
+                            main.showForm(new Pembelian());
+                            break;
+                        case 2:
+                            main.showForm(new Keuangan());
+                            break;
+                    }
+                    break;
+                case 7: // Log Out
                     logout();
                     break;
                 default:

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 02 Jun 2025 pada 14.28
+-- Waktu pembuatan: 03 Jun 2025 pada 06.03
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -136,7 +136,9 @@ CREATE TABLE `pembelian` (
   `tanggal` date NOT NULL,
   `total` decimal(15,2) NOT NULL,
   `keterangan` text DEFAULT NULL,
-  `nama_supplier` varchar(20) DEFAULT NULL
+  `nama_supplier` varchar(20) DEFAULT NULL,
+  `no_telp` varchar(20) DEFAULT NULL,
+  `nama_perusahaan` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -152,7 +154,8 @@ CREATE TABLE `penjualan` (
   `total` decimal(15,2) NOT NULL,
   `keterangan` text DEFAULT NULL,
   `kategori` enum('Perusahaan','Perorangan') DEFAULT NULL,
-  `nama_pelanggan` varchar(20) DEFAULT NULL
+  `nama_pelanggan` varchar(20) DEFAULT NULL,
+  `nama_perusahaan` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

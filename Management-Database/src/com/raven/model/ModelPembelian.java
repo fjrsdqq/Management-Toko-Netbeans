@@ -3,20 +3,24 @@ package com.raven.model;
 public class ModelPembelian {
     private int id; 
     private int id_supp; 
+    private String namaB; 
     private String namaSupplier; 
     private String nPerusahaan; 
     private String noTelp; 
-    private String tanggal; 
+    private String tanggal;
+    private double hargap;
     private double totalH; 
     private String keterangan; 
 
-    public ModelPembelian(int id, int id_supp, String namaSupplier, String nPerusahaan, String noTelp, String tanggal, double totalH, String keterangan) {
+    public ModelPembelian(int id, int id_supp,String namaB, String namaSupplier, String nPerusahaan, String noTelp, String tanggal,double hargap, double totalH, String keterangan) {
         this.id = id;
         this.id_supp = id_supp;
+        this.namaB = namaB;
         this.namaSupplier = namaSupplier;
         this.nPerusahaan = nPerusahaan;
         this.noTelp = noTelp;
         this.tanggal = tanggal;
+        this.hargap = hargap;
         this.totalH = totalH;
         this.keterangan = keterangan;
     }
@@ -25,10 +29,12 @@ public class ModelPembelian {
         return new Object[]{
             id,
             id_supp,
+            namaB,
             namaSupplier,
             nPerusahaan,
             noTelp,
             tanggal,
+            hargap,
             totalH,
             keterangan
         };
@@ -49,6 +55,13 @@ public class ModelPembelian {
 
     public void setId_supp(int id_supp) {
         this.id_supp = id_supp;
+    }
+    public String getnamaB() {
+        return namaB;
+    }
+
+    public void setnamaB(String namaB) {
+        this.namaB = namaB;
     }
 
     public String getNamaSupplier() {
@@ -82,13 +95,20 @@ public class ModelPembelian {
     public void setTanggal(String tanggal) {
         this.tanggal = tanggal;
     }
-
     public double getTotalH() {
         return totalH;
     }
 
     public void setTotalH(double totalH) {
         this.totalH = totalH;
+    }
+
+    public double gethargap() {
+        return hargap;
+    }
+
+    public void sethargap(double hargap) {
+        this.hargap = hargap;
     }
 
     public String getKeterangan() {

@@ -55,9 +55,7 @@ public class DataSupplier extends javax.swing.JPanel {
             return;
         }
 
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"id", "Nama Supplier", "Alamat", "No Telepon", "Perusahaan", "Keterangan"}, 0
-        );
+        DefaultTableModel model = new DefaultTableModel();
         table1.setModel(model);
 
         try {
@@ -119,13 +117,13 @@ public class DataSupplier extends javax.swing.JPanel {
         while (rs.next()) {
             String id = rs.getString("id_supplier");
             String nama = rs.getString("nama_supplier");
-            String kontak = rs.getString("no_hp");
+            String kontaks = rs.getString("no_hp");
             String alamats = rs.getString("alamat");
             String perus = rs.getString("perusahaan");
-            String keterangan = rs.getString("keterangan");
+            String keterangans = rs.getString("keterangan");
             
 
-            ModelDataSupplier barang = new ModelDataSupplier(id, nama,perus,kontak, alamats, keterangan);
+            ModelDataSupplier barang = new ModelDataSupplier(id, nama,perus,kontaks, alamats, keterangans);
             model.addRow(barang.toRowTable()); // Tanpa eventAction
         }
 
@@ -188,7 +186,7 @@ public class DataSupplier extends javax.swing.JPanel {
 
             },
             new String [] {
-                "id","Nama Supplier", "Alamat", "No telepon", "Perusahaan", "keterangan"
+                "id","Nama Supplier", "Perusahaan", "No telepon", "Alamat", "keterangan"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -466,9 +464,9 @@ public class DataSupplier extends javax.swing.JPanel {
         // Ambil data dari tabel berdasarkan index kolom
         String id = table1.getValueAt(selectedRow, 0).toString();
         String nama = table1.getValueAt(selectedRow, 1).toString();
-        String alamat = table1.getValueAt(selectedRow, 2).toString();
+        String perusahaan = table1.getValueAt(selectedRow, 2).toString();
         String nohp = table1.getValueAt(selectedRow, 3).toString();
-        String perusahaan = table1.getValueAt(selectedRow, 4).toString();
+        String alamat = table1.getValueAt(selectedRow, 4).toString();
         String keterangan = table1.getValueAt(selectedRow, 5).toString();
 
         // Tampilkan data ke input field
@@ -495,12 +493,12 @@ public class DataSupplier extends javax.swing.JPanel {
 
     try {
         Connection conn = konek.getConnection(); // Ganti dengan method koneksi milikmu
-        String sql = "INSERT INTO supplier (nama_supplier, alamat, no_hp, perusahaan, keterangan) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO supplier (nama_supplier, perusahaan, no_hp, alamat, keterangan) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, nama);
-        ps.setString(2, alamat);
+        ps.setString(2, perusahaan);
         ps.setString(3, kontak);
-        ps.setString(4, perusahaan);
+        ps.setString(4, alamat);
         ps.setString(5, keterangan);
 
         int result = ps.executeUpdate();
@@ -548,12 +546,12 @@ public class DataSupplier extends javax.swing.JPanel {
     // Eksekusi update
     try {
         Connection conn = konek.getConnection();
-        String sql = "UPDATE supplier SET nama_supplier=?, alamat=?, no_hp=?, perusahaan=?, keterangan=? WHERE id_supplier=?";
+        String sql = "UPDATE supplier SET nama_supplier=?, perusahaan=?, no_hp=?, alamat=?, keterangan=? WHERE id_supplier=?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, nama);
-        ps.setString(2, alamat);
+        ps.setString(2, perusahaan);
         ps.setString(3, no_hp);
-        ps.setString(4, perusahaan);
+        ps.setString(4,alamat );
         ps.setString(5, keterangan);
         ps.setString(6, id_supplier);
 
@@ -636,7 +634,7 @@ public class DataSupplier extends javax.swing.JPanel {
                 String keterangan = rs.getString("keterangan");
 
                 // Tambahkan baris ke tabel
-                Object[] row = { id, nama, alamat, nohp, perusahaan, keterangan };
+                Object[] row = { id, nama,perusahaan , nohp, alamat, keterangan };
                 model.addRow(row);
             }
 

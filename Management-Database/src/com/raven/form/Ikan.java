@@ -64,14 +64,14 @@ public class Ikan extends javax.swing.JPanel {
         }
 
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Ikan", "Tanggal", "Stok (kg)", "Keterangan"}, 0
+             new Object[]{"ID","IDS", "Nama Ikan", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"}, 0
         );
         tblikan.setModel(model);
 
         try {
             Connection conn = konek.getConnection();
             String sql = "SELECT * FROM barang WHERE jenis_bahan='Ikan' AND " +
-                         "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR jumlah_stock LIKE ?)";
+                         "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR stok LIKE ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
 
             for (int i = 1; i <= 5; i++) {
@@ -85,8 +85,10 @@ public class Ikan extends javax.swing.JPanel {
                 rowCount++;
                 ModelIkan data = new ModelIkan(
                     rs.getInt("id_barang"),
+                    rs.getInt("id_supplier"),
                     rs.getString("nama_bahan"),
-                    rs.getInt("jumlah_stock"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -115,7 +117,7 @@ public class Ikan extends javax.swing.JPanel {
 
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Ikan", "Tanggal", "Stok (kg)", "Keterangan"}, 0
+            new Object[]{"ID","IDS", "Nama Ikan", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"}, 0
         );
         tblikan.setModel(model);
 
@@ -128,8 +130,10 @@ public class Ikan extends javax.swing.JPanel {
             while (rs.next()) {
                 ModelIkan data = new ModelIkan(
                     rs.getInt("id_barang"),
+                    rs.getInt("id_supplier"),
                     rs.getString("nama_bahan"),
-                    rs.getInt("jumlah_stock"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -189,7 +193,7 @@ public class Ikan extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Nama Ikan", "Tanggal", "Stok/Kg", "Keterangan"
+                "ID", "Nama Ikan", "Tanggal", "Harga/Kg", "Keterangan"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -335,8 +339,8 @@ public class Ikan extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(txtKeterangan, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                                 .addComponent(txtStok)
-                                .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtNama)))))
+                                .addComponent(txtNama)
+                                .addComponent(txtTanggal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(846, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -540,11 +544,11 @@ try {
 // Ambil data dari tabel ikan
 int i = tblikan.getSelectedRow();  // tblbumbu bisa diganti jadi tblikan jika nama tabel di UI Anda juga diubah
 
-String id = tblikan.getValueAt(i, 0).toString(); // ID ikan (jika dibutuhkan)
-String nama = tblikan.getValueAt(i, 1).toString(); // Nama ikan
-String tanggal = tblikan.getValueAt(i, 2).toString(); // Tanggal masuk
-String stokText = tblikan.getValueAt(i, 3).toString(); // Stok per kilogram
-String keterangan = tblikan.getValueAt(i, 4).toString(); // Keterangan
+String id = tblikan.getValueAt(i, 0).toString(); // Jika dibutuhkan
+String nama = tblikan.getValueAt(i, 2).toString();
+String tanggal = tblikan.getValueAt(i, 5).toString();
+String stokText = tblikan.getValueAt(i, 4).toString();
+String keterangan = tblikan.getValueAt(i, 6).toString();
 
 int stok = 0;
 try {

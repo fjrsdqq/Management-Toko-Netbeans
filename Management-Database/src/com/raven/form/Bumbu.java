@@ -1,28 +1,15 @@
 package com.raven.form;
 
 import com.raven.model.ModelBumbu;
-import com.raven.dialog.Message;
-import com.raven.main.Main;
-import com.raven.model.ModelCard;
-import com.raven.model.ModelDataPelanggan;
-import com.raven.model.ModelStudent;
-import com.raven.swing.icon.GoogleMaterialDesignIcons;
-import com.raven.swing.icon.IconFontSwing;
-import com.raven.swing.table.EventAction;
-import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.text.DecimalFormat;
 
 import javax.swing.JOptionPane;
 
@@ -68,14 +55,14 @@ private void performSearch() {
 
     // ✅ Kolom header disesuaikan
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
+        new Object[]{"ID","IDS", "Nama Bumbu", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"},0
     );
     tblbumbu.setModel(model);
 
     try {
         Connection conn = konek.getConnection();
         String sql = "SELECT * FROM barang WHERE jenis_bahan='Bumbu' AND " +
-                     "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR jumlah_stock LIKE ?)";
+                     "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR stok LIKE ?)";
         PreparedStatement ps = conn.prepareStatement(sql);
 
         for (int i = 1; i <= 5; i++) {
@@ -89,10 +76,12 @@ private void performSearch() {
             rowCount++;
             ModelBumbu data = new ModelBumbu(
                 rs.getInt("id_barang"),
-                rs.getString("nama_bahan"),
-                rs.getInt("jumlah_stock"),
-                rs.getString("tanggal"),
-                rs.getString("keterangan")
+                    rs.getInt("id_supplier"),
+                    rs.getString("nama_bahan"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
+                    rs.getString("tanggal"),
+                    rs.getString("keterangan")
             );
             model.addRow(data.toRowTable());
         }
@@ -117,7 +106,7 @@ private void resetForm() {
 }
 private void initTableData() {
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"ID", "Nama Bumbu", "Tanggal", "Stok", "Keterangan"}, 0
+         new Object[]{"ID","IDS", "Nama Bumbu", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"}, 0
     );
     tblbumbu.setModel(model);
 
@@ -129,11 +118,13 @@ private void initTableData() {
 
         while (rs.next()) {
             ModelBumbu data = new ModelBumbu(
-                rs.getInt("id_barang"),
-                rs.getString("nama_bahan"),
-                rs.getInt("jumlah_stock"),
-                rs.getString("tanggal"),
-                rs.getString("keterangan")
+                 rs.getInt("id_barang"),
+                    rs.getInt("id_supplier"),
+                    rs.getString("nama_bahan"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
+                    rs.getString("tanggal"),
+                    rs.getString("keterangan")
             );
             model.insertRow(0, data.toRowTable());
         }
@@ -190,22 +181,6 @@ private void initTableData() {
         jLabel5.setText("Data Bumbu");
         jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 1));
 
-        tblbumbu.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID",  "Nama Bumbu", "Tanggal", "Stok", "Keterangan"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
         tblbumbu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblbumbuMouseClicked(evt);
@@ -327,17 +302,15 @@ private void initTableData() {
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnsave)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnedit))
-                                    .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnsave)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnedit)
                                 .addGap(12, 12, 12)
                                 .addComponent(btndelete))
                             .addComponent(txtStok)
                             .addComponent(txtNama)
-                            .addComponent(txtKeterangan)))
+                            .addComponent(txtKeterangan)
+                            .addComponent(txtTanggal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel1))
                 .addGap(167, 167, 167))
         );
@@ -422,7 +395,7 @@ try {
 }
 
 try (Connection conn = konek.getConnection()) {
-    String sql = "INSERT INTO barang (nama_bahan, jenis_bahan, jumlah_stock, keterangan, tanggal) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO barang (nama_bahan, jenis_bahan, stok, keterangan, tanggal) VALUES (?, ?, ?, ?, ?)";
     PreparedStatement ps = conn.prepareStatement(sql);
     ps.setString(1, nama);
     ps.setString(2, "Bumbu"); // Ini kunci utama: set 'Bumbu'
@@ -476,7 +449,7 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 String tanggal = sdf.format(tanggalDate);
 
 try (Connection conn = konek.getConnection()) {
-    String sql = "UPDATE barang SET nama_bahan = ?, tanggal = ?, jumlah_stock = ?, keterangan = ? WHERE id_barang = ?";
+    String sql = "UPDATE barang SET nama_bahan = ?, tanggal = ?, stok = ?, keterangan = ? WHERE id_barang = ?";
     PreparedStatement ps = conn.prepareStatement(sql);
     ps.setString(1, namaBumbu);
     ps.setString(2, tanggal);
@@ -549,10 +522,10 @@ int selectedRow = tblbumbu.getSelectedRow();
 if (selectedRow != -1) {
     // Ambil data dari tabel berdasarkan index kolom
     String id = tblbumbu.getValueAt(selectedRow, 0).toString(); // Jika dibutuhkan
-    String nama = tblbumbu.getValueAt(selectedRow, 1).toString();
-    String tanggal = tblbumbu.getValueAt(selectedRow, 2).toString();
-    String stokText = tblbumbu.getValueAt(selectedRow, 3).toString();
-    String keterangan = tblbumbu.getValueAt(selectedRow, 4).toString();
+    String nama = tblbumbu.getValueAt(selectedRow, 2).toString();
+    String tanggal = tblbumbu.getValueAt(selectedRow, 5).toString();
+    String stokText = tblbumbu.getValueAt(selectedRow, 4).toString();
+    String keterangan = tblbumbu.getValueAt(selectedRow, 6).toString();
 
     // Parsing stok dari teks ke angka
     int stok = 0;

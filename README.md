@@ -5,7 +5,9 @@
 # (remainder) Jangan lupa pake JDK 1.8 di Projectnya !!!!!
 #### Contoh Library yang benar : 
 ![image](https://github.com/user-attachments/assets/1e71014a-f711-4dcd-8efa-5f10da2d8397)
-
+## tutorial Jasper Report
+### Wajib Di install Sebelum Dijalanin, Liat di YT ini buat tutorialnya
+- untuk tutorial penggunaan jasper report itu ada di sini : https://www.youtube.com/watch?v=DX0GC5dxymU
 
 # Cara Pemakaian :
 
@@ -33,8 +35,8 @@
 | Chelseano Putra            | 202243501420      | Universitas Indraprasta PGRI              |
 | Dicky Achmad               | 202243501468      | Universitas Indraprasta PGRI              |
 | Fajar Sidik                | 202243501442      | Universitas Indraprasta PGRI              |
-|Heru                        |                   | Universitas Indraprasta PGRI              |
-| M. Ihsan Prasetyo          |                   | Universitas Indraprasta PGRI              |
+| Heru Setyawan              | 202243501414      | Universitas Indraprasta PGRI              |
+| M. Ihsan Prasetyo          | 202243501423      | Universitas Indraprasta PGRI              |
 
 
   

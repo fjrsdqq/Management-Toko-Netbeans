@@ -1,28 +1,16 @@
 package com.raven.form;
 
 import com.raven.model.ModelTepung;
-import com.raven.dialog.Message;
-import com.raven.main.Main;
-import com.raven.model.ModelCard;
-import com.raven.model.ModelDataPelanggan;
-import com.raven.model.ModelStudent;
-import com.raven.swing.icon.GoogleMaterialDesignIcons;
-import com.raven.swing.icon.IconFontSwing;
-import com.raven.swing.table.EventAction;
-import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.text.DecimalFormat;
 
 public class Tepung extends javax.swing.JPanel {
     com.raven.component.koneksi konek = new com.raven.component.koneksi();
@@ -65,14 +53,15 @@ public class Tepung extends javax.swing.JPanel {
 
         // ✅ Kolom header disesuaikan
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Tepung", "Tanggal", "Stok", "Keterangan"}, 0
+            new Object[]{"ID","IDS", "Nama Tepung", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"}, 0
         );
         tbltepung.setModel(model);
+        
 
         try {
             Connection conn = konek.getConnection();
             String sql = "SELECT * FROM barang WHERE jenis_bahan='Tepung' AND " +
-                         "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR jumlah_stock LIKE ?)";
+                         "(id_barang LIKE ? OR nama_bahan LIKE ? OR keterangan LIKE ? OR tanggal LIKE ? OR stok LIKE ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
 
             for (int i = 1; i <= 5; i++) {
@@ -85,9 +74,11 @@ public class Tepung extends javax.swing.JPanel {
             while (rs.next()) {
                 rowCount++;
                 ModelTepung data = new ModelTepung(
-                    rs.getInt("id_barang"),
+                     rs.getInt("id_barang"),
+                    rs.getInt("id_supplier"),
                     rs.getString("nama_bahan"),
-                    rs.getInt("jumlah_stock"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -116,7 +107,7 @@ public class Tepung extends javax.swing.JPanel {
 
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Tepung", "Tanggal", "Stok", "Keterangan"}, 0
+             new Object[]{"ID","IDS", "Nama Tepung", "Harga/kg", "Stok(kg)","Tanggal", "Keterangan"}, 0
         );
         tbltepung.setModel(model);
 
@@ -128,9 +119,11 @@ public class Tepung extends javax.swing.JPanel {
 
             while (rs.next()) {
                 ModelTepung data = new ModelTepung(
-                    rs.getInt("id_barang"),
+                     rs.getInt("id_barang"),
+                    rs.getInt("id_supplier"),
                     rs.getString("nama_bahan"),
-                    rs.getInt("jumlah_stock"),
+                    rs.getDouble("hargapkg"),    
+                    rs.getInt("stok"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -187,29 +180,18 @@ public class Tepung extends javax.swing.JPanel {
 
         tbltepung.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {}
             },
             new String [] {
-                "ID", "Nama Tepung", "Tanggal", "Stok", "Keterangan"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
-            };
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
-        });
+        ));
         tbltepung.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tbltepungMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tbltepung);
-        if (tbltepung.getColumnModel().getColumnCount() > 0) {
-            tbltepung.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
 
         t_cari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -223,15 +205,11 @@ public class Tepung extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1020, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,9 +218,9 @@ public class Tepung extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(1, 1, 1)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 522, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel6.setText("Nama Tepung");
@@ -310,9 +288,6 @@ public class Tepung extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(441, 441, 441))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel9)
@@ -337,9 +312,10 @@ public class Tepung extends javax.swing.JPanel {
                                 .addComponent(btnedit)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btndelete))
-                            .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNama))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(txtNama)
+                            .addComponent(txtTanggal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 611, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -542,10 +518,10 @@ try {
 int i = tbltepung.getSelectedRow(); // ✅ ganti dari tblbumbu
 
 String id = tbltepung.getValueAt(i, 0).toString(); // Jika dibutuhkan
-String nama = tbltepung.getValueAt(i, 1).toString();
-String tanggal = tbltepung.getValueAt(i, 2).toString();
-String stokText = tbltepung.getValueAt(i, 3).toString();
-String keterangan = tbltepung.getValueAt(i, 4).toString();
+String nama = tbltepung.getValueAt(i, 2).toString();
+String tanggal = tbltepung.getValueAt(i, 5).toString();
+String stokText = tbltepung.getValueAt(i, 4).toString();
+String keterangan = tbltepung.getValueAt(i, 6).toString();
 
 int stok = 0;
 try {

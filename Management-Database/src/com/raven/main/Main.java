@@ -20,16 +20,24 @@ import com.raven.swing.PopupMenu;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
 import com.raven.swing.icon.IconFontSwing;
 import java.awt.Component;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import net.miginfocom.swing.MigLayout;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.view.JasperViewer;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
 
 public class Main extends javax.swing.JFrame {
-
+com.raven.component.koneksi konek = new com.raven.component.koneksi();
     private MigLayout layout;
     private Menu menu;
     private Header header;
@@ -88,16 +96,22 @@ public class Main extends javax.swing.JFrame {
                             break;
                     }
                     break;
-                case 6: // Log Out
+                case 6: // Laporan
                     switch (subMenuIndex) {
                         case 0:
-                            main.showForm(new Penjualan());
+                            lapBarang();
                             break;
                         case 1:
-                            main.showForm(new Pembelian());
+                            lapSupplier();
                             break;
                         case 2:
-                            main.showForm(new Keuangan());
+                            lapPelanggan();
+                            break;
+                        case 3:
+                            lapKaryawan();
+                            break;
+                        case 4:
+                            lapTransaksi();
                             break;
                     }
                     break;
@@ -199,7 +213,48 @@ public class Main extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+   
+    private void lapBarang(){
+        try {
+        // Pastikan koneksi jalan
+        Connection conn = konek.getConnection();  // Sesuaikan dengan class koneksi kamu
 
+        // Lokasi file laporan .jasper
+        String path = "src/Report/Lapbarang.jasper";  // Sesuaikan dengan lokasi sebenarnya
+
+        // Jika butuh parameter, tambahkan ke sini
+        HashMap<String, Object> parameter = new HashMap<>();
+        // Misalnya parameter.put("id_barang", "B001");
+
+        // Isi laporan
+        JasperPrint print = JasperFillManager.fillReport(path, parameter, conn);
+
+        // Tampilkan laporan di viewer Jasper
+        JasperViewer viewer = new JasperViewer(print, false);
+        viewer.setTitle("Laporan Data Barang");
+        viewer.setVisible(true);
+
+        // Jika mau langsung export PDF (opsional)
+         JasperExportManager.exportReportToPdfFile(print, "LaporanDataBarang.pdf");
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Gagal mencetak laporan: " + ex.getMessage());
+        ex.printStackTrace();
+    }
+        
+    }
+    private void lapSupplier(){
+        
+    }
+    private void lapPelanggan(){
+        
+    }
+    private void lapKaryawan(){
+        
+    }
+    private void lapTransaksi(){
+        
+    }
     private void logout() {
     int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin logout?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
     if (confirm == JOptionPane.YES_OPTION) {

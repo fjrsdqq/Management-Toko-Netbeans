@@ -1,28 +1,16 @@
 package com.raven.form;
 
 import com.raven.model.ModelIkan; // ganti model yang sesuai
-import com.raven.dialog.Message;
-import com.raven.main.Main;
-import com.raven.model.ModelCard;
-import com.raven.model.ModelDataPelanggan;
-import com.raven.model.ModelStudent;
-import com.raven.swing.icon.GoogleMaterialDesignIcons;
-import com.raven.swing.icon.IconFontSwing;
-import com.raven.swing.table.EventAction;
-import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.text.DecimalFormat;
 
 public class Ikan extends javax.swing.JPanel {
     com.raven.component.koneksi konek = new com.raven.component.koneksi();

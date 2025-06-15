@@ -10,6 +10,8 @@ import com.raven.form.DataKaryawan;
 import com.raven.form.Form_Home;
 import com.raven.form.Ikan;
 import com.raven.form.MainForm;
+import com.raven.form.Resep;
+import com.raven.form.DetailResep;
 import com.raven.form.Tepung;
 import com.raven.form.DataPelanggan;
 import com.raven.form.DataSupplier;
@@ -83,7 +85,17 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                 case 4: // DataPelanggan
                     main.showForm(new DataPelanggan());
                     break;
-                case 5: // Transaksi
+                case 5: //Resep
+                    switch (subMenuIndex) {
+                        case 0:
+                            main.showForm(new Resep());
+                            break;
+                        case 1:
+                            main.showForm(new DetailResep());
+                            break;
+                    }
+                    break;
+                case 6: // Transaksi
                     switch (subMenuIndex) {
                         case 0:
                             main.showForm(new Penjualan());
@@ -96,7 +108,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                             break;
                     }
                     break;
-                case 6: // Laporan
+                case 7: // Laporan
                     switch (subMenuIndex) {
                         case 0:
                             lapBarang();
@@ -115,7 +127,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                             break;
                     }
                     break;
-                case 7: // Log Out
+                case 8: // Log Out
                     logout();
                     break;
                 default:

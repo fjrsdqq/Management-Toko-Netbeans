@@ -68,7 +68,7 @@ public class DetailResep extends javax.swing.JPanel {
         tblDResep.setModel(model);
 
         try (Connection conn = konek.getConnection()) {
-            String sql = "SELECT d.id_detail_resep, r.nama_resep, b.nama_bahan, d.jumlah, d.tanggal " +
+            String sql = "SELECT d.id_detail, r.nama_resep, b.nama_bahan, d.jumlah, d.tanggal " +
                          "FROM detail_resep d " +
                          "JOIN resep r ON d.id_resep = r.id_resep " +
                          "JOIN barang b ON d.id_barang = b.id_barang " +
@@ -81,7 +81,7 @@ public class DetailResep extends javax.swing.JPanel {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 model.addRow(new Object[]{
-                    rs.getInt("id_detail_resep"),
+                    rs.getInt("id_detail"),
                     rs.getString("nama_resep"),
                     rs.getString("nama_bahan"),
                     rs.getInt("jumlah"),
@@ -102,9 +102,44 @@ public class DetailResep extends javax.swing.JPanel {
 
     private void initTableData() {
         tableModel = new DefaultTableModel(new Object[]{
-            "ID Detail Resep", "Nama Resep", "Kategori", "Nama Item", "Jumlah", "Tanggal"
-        }, 0);
+            "ID Detail Resep", "ID Resep", "ID Barang", "Nama Resep", "Kategori", "Nama Item", "Jumlah",
+        "Tanggal"}, 0);
         tblDResep.setModel(tableModel);
+        
+        try {
+        Connection conn = konek.getConnection();
+
+        String sql = "SELECT dr.id_detail, dr.id_resep, dr.id_barang, dr.jumlah, dr.tanggal, " +
+                     "r.nama_resep, b.nama_bahan, b.jenis_bahan " +
+                     "FROM detail_resep dr " +
+                     "JOIN resep r ON dr.id_resep = r.id_resep " +
+                     "JOIN barang b ON dr.id_barang = b.id_barang";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            ModelDetailResep detail = new ModelDetailResep(
+                rs.getInt("id_detail"),
+                rs.getInt("id_resep"),
+                rs.getInt("id_barang"),
+                rs.getString("nama_resep"),
+                rs.getString("jenis_bahan"),
+                rs.getString("nama_bahan"),
+                rs.getInt("jumlah"),
+                rs.getString("tanggal")
+            );
+
+            tableModel.insertRow(0, detail.toRowTable());
+        }
+
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Gagal mengambil data detail resep dari database.");
+        }
     }
     
     private void loadNamaResep() {

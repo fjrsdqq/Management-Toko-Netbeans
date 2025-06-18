@@ -1,12 +1,11 @@
 package com.raven.form;
 
-import com.raven.dialog.Message;
-import com.raven.main.Main;
 import java.util.Date;
 import com.raven.model.ModelDataSupplier;
-import com.raven.model.ModelIkan;
 import com.raven.model.ModelPembelian;
 import com.raven.model.Modelbarang;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +15,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 public class Pembelian extends javax.swing.JPanel {
@@ -28,6 +29,8 @@ private int selectedPembelianId = -1;
         tblpembelian.fixTable(jScrollPane1);
         setOpaque(false);
         initData();
+        initListeners();
+        
     }
 
     private void initData() {
@@ -123,6 +126,9 @@ private int selectedPembelianId = -1;
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         cmbBarang = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        txtStok = new javax.swing.JTextField();
 
         jMenu1.setText("jMenu1");
 
@@ -229,37 +235,24 @@ private int selectedPembelianId = -1;
         jLabel18.setText(":");
 
         cmbBarang.setModel(new javax.swing.DefaultComboBoxModel<>());
+        cmbBarang.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbBarangActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Stock / kg");
+
+        jLabel8.setText(":");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel11)
-                                    .addComponent(jLabel12))
-                                .addGap(41, 41, 41)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(cmbKategori, 0, 230, Short.MAX_VALUE)
-                                    .addComponent(cmbBarang, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(39, 39, 39)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel3)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnSave)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel9)
@@ -276,23 +269,52 @@ private int selectedPembelianId = -1;
                                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(cmbSupplier, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                        .addGap(41, 41, 41)
-                        .addComponent(jLabel4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtKeterangan, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(39, 39, 39)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtHargap, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addComponent(jLabel4)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnSave)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel11)
+                                .addGap(41, 41, 41)
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(cmbBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)
+                                .addComponent(jLabel6)
+                                .addGap(24, 24, 24)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 3, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel12)
+                                        .addGap(41, 41, 41)
+                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cmbKategori, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(39, 39, 39)
+                                .addComponent(jLabel15)
+                                .addGap(24, 24, 24)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(17, 17, 17)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtHargap, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                    .addComponent(txtStok)
+                    .addComponent(txtKeterangan)
+                    .addComponent(txtTotal))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -307,33 +329,39 @@ private int selectedPembelianId = -1;
                     .addComponent(txtHargap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cmbKategori, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel3)
-                        .addComponent(jLabel17)
-                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel13)
-                        .addComponent(jLabel11)
-                        .addComponent(cmbBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel4)
-                        .addComponent(jLabel18)
-                        .addComponent(txtKeterangan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel9)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel10)
-                        .addComponent(cmbSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel11)
+                    .addComponent(cmbBarang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel8)
+                    .addComponent(txtStok, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel16)
-                        .addComponent(jLabel2)))
-                .addGap(27, 27, 27)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel10)
+                                .addComponent(cmbSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel16)
+                                .addComponent(jLabel2))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel17)
+                            .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel18)
+                            .addComponent(txtKeterangan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDelete)
                     .addComponent(btnSave))
@@ -506,6 +534,40 @@ private int selectedPembelianId = -1;
             e.printStackTrace();
         }
     }
+    private void initListeners() {
+        // ActionListener untuk cmbBarang
+        cmbBarang.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Modelbarang selectedBarang = (Modelbarang) cmbBarang.getSelectedItem();
+                if (selectedBarang != null && !selectedBarang.getIdBarang().equals("-1")) {
+                    txtHargap.setText(String.valueOf(selectedBarang.getHargapkg()));
+                    calculateTotalHarga();
+                } else {
+                    txtHargap.setText("");
+                    txtTotal.setText("");
+                }
+            }
+        });
+
+        // DocumentListener untuk txtStok
+        txtStok.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                calculateTotalHarga();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                calculateTotalHarga();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                calculateTotalHarga();
+            }
+        });
+    }
 
     
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -552,9 +614,27 @@ private int selectedPembelianId = -1;
     };
 
     }//GEN-LAST:event_cmbKategoriActionPerformed
+
+    private void cmbBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbBarangActionPerformed
+        // TODO add your handling code here:
+        // Di dalam konstruktor Pembelian() atau method initData() atau method baru
+// Setelah cmbBarang diinisialisasi (biasanya oleh initComponents())
+
+        Modelbarang selectedBarang = (Modelbarang) cmbBarang.getSelectedItem();
+        if (selectedBarang != null && !selectedBarang.getIdBarang().equals("-1")) { // Pastikan bukan placeholder
+            txtHargap.setText(String.valueOf(selectedBarang.getHargapkg()));
+        } else {
+            txtHargap.setText(""); // Kosongkan jika tidak ada barang yang dipilih atau placeholder
+        }
+    
+
+    }//GEN-LAST:event_cmbBarangActionPerformed
 private void loadBarangByKategori(String kategori) {
-    cmbBarang.removeAllItems(); // pastikan cmbBarang bertipe JComboBox<ModelBarang>
-    String sql = "SELECT id_barang, nama_bahan FROM barang WHERE jenis_bahan = ?";
+    cmbBarang.removeAllItems();
+    // Tambahkan placeholder awal jika diperlukan
+    cmbBarang.addItem(new Modelbarang("-1", "-- Pilih Barang --", 0.0));
+
+    String sql = "SELECT id_barang, nama_bahan, hargapkg FROM barang WHERE jenis_bahan = ?"; // Ambil hargapkg
 
     try (Connection conn = konek.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -565,20 +645,47 @@ private void loadBarangByKategori(String kategori) {
         while (rs.next()) {
             String idBarang = rs.getString("id_barang");
             String namaBahan = rs.getString("nama_bahan");
-            cmbBarang.addItem(new Modelbarang(idBarang, namaBahan));
+            double hargapkg = rs.getDouble("hargapkg"); // Ambil harga per kg
+            cmbBarang.addItem(new Modelbarang(idBarang, namaBahan, hargapkg)); // Buat objek Modelbarang dengan hargapkg
         }
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Gagal memuat barang: " + e.getMessage());
     }
 }
+private void calculateTotalHarga() {
+        try {
+            double hargaPerKg = 0.0;
+            // Coba ambil harga per kg dari txtHargap
+            if (!txtHargap.getText().isEmpty()) {
+                hargaPerKg = Double.parseDouble(txtHargap.getText());
+            }
 
+            double stok = 0.0;
+            // Coba ambil stok dari txtStok
+            if (!txtStok.getText().isEmpty()) {
+                stok = Double.parseDouble(txtStok.getText());
+            }
+
+            double totalHarga = stok * hargaPerKg;
+            txtTotal.setText(String.format("%.2f", totalHarga)); // Format ke 2 angka di belakang koma
+        } catch (NumberFormatException ex) {
+            // Jika input bukan angka, kosongkan total atau tampilkan pesan error
+            txtTotal.setText("");
+            // Anda bisa menambahkan JOptionPane.showMessageDialog di sini jika ingin memberitahu user
+            // JOptionPane.showMessageDialog(this, "Input Stok atau Harga/Kg harus berupa angka.", "Input Tidak Valid", JOptionPane.WARNING_MESSAGE);
+        }
+    }
 
     private void clearForm() {
-        txtTanggal.setDate(null); // Mengosongkan JDateChooser
+        txtTanggal.setDate(null);
         txtTotal.setText("");
         txtKeterangan.setText("");
-        cmbSupplier.setSelectedIndex(0); // Kembali ke pilihan "-- Pilih Supplier --"
+        txtStok.setText(""); // Bersihkan juga field stok
+        txtHargap.setText(""); // Bersihkan juga field harga per kg
+        cmbSupplier.setSelectedIndex(0);
+        cmbKategori.setSelectedIndex(0); // Mungkin perlu direset juga
+        cmbBarang.removeAllItems(); // Kosongkan cmbBarang
         isEditing = false;
         selectedPembelianId = -1;
         btnSave.setText("Save");
@@ -599,7 +706,7 @@ private void loadBarangByKategori(String kategori) {
 
     private void loadSuppliersToComboBox() {
         DefaultComboBoxModel<ModelDataSupplier> model = new DefaultComboBoxModel<>();
-        model.addElement(new ModelDataSupplier("-1", "-- Pilih Barang --", "", "", "", "")); // Placeholder awal
+        model.addElement(new ModelDataSupplier("-1", "-- Pilih Supplier --", "", "", "", "")); // Placeholder awal
         try (Connection conn = konek.getConnection();
              // Sesuaikan query agar mengambil kolom yang sesuai dengan ModelDataSupplier Anda
              PreparedStatement stmt = conn.prepareStatement("SELECT id_supplier, nama_supplier, perusahaan, no_hp, alamat, keterangan FROM supplier");
@@ -645,7 +752,9 @@ private void loadBarangByKategori(String kategori) {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JPanel jPanel2;
@@ -654,6 +763,7 @@ private void loadBarangByKategori(String kategori) {
     private com.raven.swing.table.Table tblpembelian;
     private javax.swing.JTextField txtHargap;
     private javax.swing.JTextField txtKeterangan;
+    private javax.swing.JTextField txtStok;
     private com.toedter.calendar.JDateChooser txtTanggal;
     private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables

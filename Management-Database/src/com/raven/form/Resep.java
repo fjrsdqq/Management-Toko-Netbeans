@@ -321,9 +321,6 @@ public class Resep extends javax.swing.JPanel {
             }
         });
         jScrollPane1.setViewportView(tblResep);
-        if (tblResep.getColumnModel().getColumnCount() > 0) {
-            tblResep.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
 
         t_cari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -413,6 +410,12 @@ public class Resep extends javax.swing.JPanel {
         btndelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btndeleteActionPerformed(evt);
+            }
+        });
+
+        cbPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPelangganActionPerformed(evt);
             }
         });
 
@@ -646,6 +649,7 @@ int selectedRow = tblResep.getSelectedRow();
         }
     }//GEN-LAST:event_tblResepMouseClicked
 
+
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
        try (Connection conn = konek.getConnection()) {
         String sqlGetResep = "SELECT id_resep, harga FROM resep";
@@ -697,6 +701,11 @@ int selectedRow = tblResep.getSelectedRow();
         JOptionPane.showMessageDialog(this, "Gagal memperbarui harga.");
     }
     }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void cbPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPelangganActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbPelangganActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRefresh;

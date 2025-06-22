@@ -1,28 +1,19 @@
 package com.raven.form;
 
 import com.raven.model.ModelForm_Home;
-import com.raven.dialog.Message;
-import com.raven.main.Main;
 import com.raven.model.ModelCard;
-import com.raven.model.ModelDataPelanggan;
-import com.raven.model.ModelStudent;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
 import com.raven.swing.icon.IconFontSwing;
-import com.raven.swing.table.EventAction;
 import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.text.DecimalFormat;
 
 
 
@@ -66,7 +57,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
     }
 
     DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengeluaran Harian", "Keterangan"}, 0
+        new Object[]{"ID", "Tanggal", "Tipe", "Total"}, 0
     );
     tblkeuangan.setModel(model);
 
@@ -93,9 +84,9 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
             String tanggal = rs.getString("tanggal");
             String tipe = rs.getString("tipe");
             double jumlah = rs.getDouble("jumlah");
-            String keterangan = rs.getString("keterangan");
+            
 
-            ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, keterangan, jumlah);
+            ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, jumlah);
             model.addRow(data.toRowTable());
         }
 
@@ -117,7 +108,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
 
     private void initTableData() {
        DefaultTableModel model = new DefaultTableModel(
-    new Object[]{"ID", "Tanggal", "Tipe", "Pemasukan Harian", "Pengeluaran Harian", "Keterangan"}, 0
+     new Object[]{"ID", "Tanggal", "Tipe", "Total"}, 0
 );
 tblkeuangan.setModel(model);
 // Menghapus semua baris sebelum load ulang
@@ -129,7 +120,7 @@ ResultSet rs = null;
     
 try {   
     conn = konek.getConnection();
-    String sql = "SELECT id_keuangan, tanggal, tipe, keterangan, jumlah FROM keuangan";
+    String sql = "SELECT id_keuangan, tanggal, tipe, jumlah FROM keuangan";
     ps = conn.prepareStatement(sql);
     rs = ps.executeQuery();
 
@@ -138,11 +129,11 @@ try {
         String tanggal = rs.getString("tanggal");
         String tipe = rs.getString("tipe");
         double jumlah = rs.getDouble("jumlah");
-        String keterangan = rs.getString("keterangan");
+        
       
 
         // Ganti dengan nama class model keuangan kamu
-      ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, keterangan, jumlah);
+      ModelForm_Home data = new ModelForm_Home(id, tanggal, tipe, jumlah);
         model.insertRow(0, data.toRowTable());
 
     }
@@ -173,11 +164,7 @@ try {
         card4.setData(new ModelCard("REKAP TAHUNAN", 550, 95, icon4));
     }
 
-    private boolean showMessage(String message) {
-        Message obj = new Message(Main.getFrames()[0], true);
-        obj.showMessage(message);
-        return obj.isOk();
-    }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -229,11 +216,6 @@ try {
                 return canEdit [columnIndex];
             }
         });
-        tblkeuangan.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblkeuanganMouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(tblkeuangan);
 
         t_cari.setToolTipText("");
@@ -252,13 +234,15 @@ try {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(233, 233, 233)
-                .addComponent(t_cari)
-                .addGap(1096, 1096, 1096))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 969, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 969, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -267,8 +251,8 @@ try {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -282,7 +266,7 @@ try {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 971, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -320,36 +304,6 @@ try {
     private void t_cariMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_t_cariMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_t_cariMouseClicked
-
-    private void tblkeuanganMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblkeuanganMouseClicked
-// Ambil data dari tabel
-int i = tblkeuangan.getSelectedRow();
-
-// Ambil data dari tabel
-String id = tblkeuangan.getValueAt(i, 0).toString();
-String tanggal = tblkeuangan.getValueAt(i, 1).toString();
-String tipe = tblkeuangan.getValueAt(i, 2).toString();
-String keterangan = tblkeuangan.getValueAt(i, 5).toString();
-
-double jumlah = 0;
-
-try {
-    String jumlahText = "";
-    if (tipe.equals("Pemasukan Harian")) {
-        jumlahText = tblkeuangan.getValueAt(i, 3).toString();
-    } else if (tipe.equals("Pengeluaran Harian")) {
-        jumlahText = tblkeuangan.getValueAt(i, 4).toString();
-    }
-
-    // Bersihkan teks dari simbol dan pemisah ribuan
-    jumlahText = jumlahText.replace("Rp", "").replace(".", "").replace(",", "").replace(" ", "");
-    jumlah = Double.parseDouble(jumlahText);
-} catch (Exception e) {
-    e.printStackTrace();
-    jumlah = 0;
-}
-
-    }//GEN-LAST:event_tblkeuanganMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.raven.component.Card card1;

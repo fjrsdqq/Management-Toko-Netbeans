@@ -66,13 +66,13 @@ public class Resep extends javax.swing.JPanel {
         }
 
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "Nama Resep", "Nama Pelanggan", "Tanggal", "Keterangan"}, 0
+            new Object[]{"ID", "Nama Resep", "Nama Pelanggan","Harga", "Tanggal", "Keterangan"}, 0
         );
         tblResep.setModel(model);
 
         try {
             Connection conn = konek.getConnection();
-            String sql = "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.tanggal, r.keterangan " +
+            String sql = "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.harga, r.tanggal, r.keterangan " +
                          "FROM resep r JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan " +
                          "WHERE r.nama_resep LIKE ? OR p.nama_pelanggan LIKE ? OR r.tanggal LIKE ? OR r.keterangan LIKE ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -90,6 +90,7 @@ public class Resep extends javax.swing.JPanel {
                     rs.getInt("id_resep"),
                     rs.getString("nama_resep"),
                     rs.getString("nama_pelanggan"),
+                        rs.getDouble("harga"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -112,14 +113,14 @@ public class Resep extends javax.swing.JPanel {
     
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
-        new Object[]{"ID", "Nama Resep", "Nama Pelanggan", "Tanggal", "Keterangan"}, 0
+        new Object[]{"ID", "Nama Resep", "Nama Pelanggan","Harga", "Tanggal", "Keterangan"}, 0
         );
         tblResep.setModel(model);
 
         try {
             Connection conn = konek.getConnection();
 
-            String sql = "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.tanggal, r.keterangan " +
+            String sql = "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.harga, r.tanggal, r.keterangan " +
                          "FROM resep r JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan";
 
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -130,6 +131,7 @@ public class Resep extends javax.swing.JPanel {
                     rs.getInt("id_resep"),
                     rs.getString("nama_resep"),
                     rs.getString("nama_pelanggan"),
+                    rs.getDouble("harga"),
                     rs.getString("tanggal"),
                     rs.getString("keterangan")
                 );
@@ -178,6 +180,7 @@ public class Resep extends javax.swing.JPanel {
     String namaPelanggan = cbPelanggan.getSelectedItem() != null ? cbPelanggan.getSelectedItem().toString() : null;
     Date tanggalDate = txtTanggal.getDate();
     String deskripsi = txtKeterangan.getText();
+    double hargat = 0.0;
 
     if (namaResep.isEmpty() || namaPelanggan == null || tanggalDate == null) {
         JOptionPane.showMessageDialog(this, "Lengkapi semua data terlebih dahulu.");
@@ -202,12 +205,13 @@ public class Resep extends javax.swing.JPanel {
         }
 
         // Insert ke tabel resep
-        String sqlInsert = "INSERT INTO resep (nama_resep, id_pelanggan, tanggal, keterangan) VALUES (?, ?, ?, ?)";
+        String sqlInsert = "INSERT INTO resep (nama_resep, id_pelanggan, harga, tanggal, keterangan) VALUES (?, ?, ?, ?,?)";
         PreparedStatement psInsert = conn.prepareStatement(sqlInsert);
         psInsert.setString(1, namaResep);
         psInsert.setInt(2, idPelanggan);
-        psInsert.setDate(3, tanggal);
-        psInsert.setString(4, deskripsi);
+        psInsert.setDate(4, tanggal);
+        psInsert.setDouble(3, hargat);
+        psInsert.setString(5, deskripsi);
 
         psInsert.executeUpdate();
         JOptionPane.showMessageDialog(this, "Data resep berhasil disimpan!");
@@ -240,13 +244,14 @@ public class Resep extends javax.swing.JPanel {
     model.addColumn("ID Resep");
     model.addColumn("Nama Resep");
     model.addColumn("Nama Pelanggan");
+    model.addColumn("Harga");
     model.addColumn("Tanggal");
     model.addColumn("Keterangan");
 
     try (Connection conn = konek.getConnection();
          Statement st = conn.createStatement();
          ResultSet rs = st.executeQuery(
-             "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.tanggal, r.keterangan " +
+             "SELECT r.id_resep, r.nama_resep, p.nama_pelanggan, r.harga, r.tanggal, r.keterangan " +
              "FROM resep r JOIN pelanggan p ON r.id_pelanggan = p.id_pelanggan")) {
 
         while (rs.next()) {
@@ -254,6 +259,7 @@ public class Resep extends javax.swing.JPanel {
                 rs.getInt("id_resep"),
                 rs.getString("nama_resep"),
                 rs.getString("nama_pelanggan"),
+                rs.getString("harga"),
                 rs.getString("tanggal"),
                 rs.getString("keterangan")
             });
@@ -281,6 +287,7 @@ public class Resep extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblResep = new com.raven.swing.table.Table();
         t_cari = new javax.swing.JTextField();
+        btnRefresh = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -308,22 +315,6 @@ public class Resep extends javax.swing.JPanel {
         jLabel5.setText("Data Resep");
         jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 1));
 
-        tblResep.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "Nama Ikan", "Tanggal", "Harga/Kg", "Keterangan"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
         tblResep.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblResepMouseClicked(evt);
@@ -340,19 +331,28 @@ public class Resep extends javax.swing.JPanel {
             }
         });
 
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(678, 678, 678)
-                        .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1004, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel5)
+                .addGap(543, 543, 543)
+                .addComponent(btnRefresh)
+                .addGap(60, 60, 60)
+                .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -360,10 +360,11 @@ public class Resep extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRefresh))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jLabel6.setText("Nama Resep");
@@ -455,7 +456,7 @@ public class Resep extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btndelete))
                             .addComponent(cbPelanggan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(846, Short.MAX_VALUE))
+                .addContainerGap(849, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -489,7 +490,7 @@ public class Resep extends javax.swing.JPanel {
                     .addComponent(btnsave)
                     .addComponent(btnedit)
                     .addComponent(btndelete))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -628,8 +629,8 @@ int selectedRow = tblResep.getSelectedRow();
         String idResep = tblResep.getValueAt(i, 0).toString();
         String namaResep = tblResep.getValueAt(i, 1).toString();
         String namaPelanggan = tblResep.getValueAt(i, 2).toString();
-        String tanggalStr = tblResep.getValueAt(i, 3).toString();
-        String deskripsi = tblResep.getValueAt(i, 4).toString();
+        String tanggalStr = tblResep.getValueAt(i, 4).toString();
+        String deskripsi = tblResep.getValueAt(i, 5).toString();
 
         // Set nilai ke form input
         txtNamaResep.setText(namaResep);
@@ -645,7 +646,60 @@ int selectedRow = tblResep.getSelectedRow();
         }
     }//GEN-LAST:event_tblResepMouseClicked
 
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+       try (Connection conn = konek.getConnection()) {
+        String sqlGetResep = "SELECT id_resep, harga FROM resep";
+        PreparedStatement psResep = conn.prepareStatement(sqlGetResep);
+        ResultSet rsResep = psResep.executeQuery();
+
+        int updatedCount = 0;
+
+        while (rsResep.next()) {
+            int idResep = rsResep.getInt("id_resep");
+            double hargaLama = rsResep.getDouble("harga");
+
+            // Hitung total harga dari detail_resep
+            String sqlSum = "SELECT SUM(hargapkg) as total FROM detail_resep WHERE id_resep = ?";
+            PreparedStatement psSum = conn.prepareStatement(sqlSum);
+            psSum.setInt(1, idResep);
+            ResultSet rsSum = psSum.executeQuery();
+
+            if (rsSum.next()) {
+                double hargaBaru = rsSum.getDouble("total");
+
+                if (hargaBaru != hargaLama) {
+                    // Update harga baru
+                    String sqlUpdate = "UPDATE resep SET harga = ? WHERE id_resep = ?";
+                    PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+                    psUpdate.setDouble(1, hargaBaru);
+                    psUpdate.setInt(2, idResep);
+                    psUpdate.executeUpdate();
+                    updatedCount++;
+                }
+            }
+
+            rsSum.close();
+            psSum.close();
+        }
+
+        rsResep.close();
+        psResep.close();
+
+        if (updatedCount > 0) {
+            JOptionPane.showMessageDialog(this, updatedCount + " resep berhasil diperbarui.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Semua harga sudah terbaru.");
+        }
+
+        initTableData(); // refresh ulang tampilan tabel jika ada
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Gagal memperbarui harga.");
+    }
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;

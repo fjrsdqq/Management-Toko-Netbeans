@@ -11,10 +11,11 @@ public class ModelDetailResep {
     private String namaResep;
     private String kategori;
     private String namaItem;
+    private double hargat;
     private int jumlah;
     private String tanggal;
-    //new Object[]{"ID","IDS", "Nama Ikan", "Tanggal","Harga/kg", "Stok(kg)", "Keterangan"}
-    public ModelDetailResep(int idDResep, int idResep, int idBarang,String namaResep, String kategori, String namaItem, int jumlah, String tanggal) {
+    
+    public ModelDetailResep(int idDResep, int idResep, int idBarang,String namaResep, String kategori, String namaItem, int jumlah,double hargat, String tanggal) {
         this.idDResep = idDResep;
         this.idResep = idResep;
         this.idBarang = idBarang;
@@ -22,18 +23,20 @@ public class ModelDetailResep {
         this.kategori = kategori;
         this.namaItem = namaItem;
         this.jumlah = jumlah;
+        this.hargat = hargat;
         this.tanggal = tanggal;
     }
 
     public Object[] toRowTable() {
         return new Object[]{
-            idDResep,
+            //idDResep,
             idResep,
-            idBarang,
+           // idBarang,
             namaResep,
-            kategori,
+          //  kategori,
             namaItem,
             jumlah,
+            hargat,
             tanggal,
         };
     }
@@ -93,6 +96,12 @@ public class ModelDetailResep {
 
     public void setJumlah(int jumlah) {
         this.jumlah = jumlah;
+    }
+    public double gethargat(){
+        return hargat;
+    }
+    public void sethargat(double hargat){
+        this.hargat = hargat;
     }
 
     public String getTanggal() {

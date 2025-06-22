@@ -373,42 +373,47 @@ private int selectedPembelianId = -1;
     private void tblpembelianMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblpembelianMouseClicked
         int selectedRow = tblpembelian.getSelectedRow();
 
-        if (selectedRow != -1) {
-            isEditing = true;
-            btnSave.setText("Update");
+    if (selectedRow != -1) {
+        isEditing = true;
+        btnSave.setText("Update");
 
-            selectedPembelianId = (int) tblpembelian.getValueAt(selectedRow, 0); // ID Pembelian
-            
-            String id_supp_str_from_table = tblpembelian.getValueAt(selectedRow, 1).toString(); // ID Supplier (String)
-            String tanggalStr = tblpembelian.getValueAt(selectedRow, 6).toString(); // Tanggal
-            String totalStr = tblpembelian.getValueAt(selectedRow, 7).toString(); // totalH
-            String keterangan = tblpembelian.getValueAt(selectedRow, 8).toString(); // Keterangan
+        selectedPembelianId = (int) tblpembelian.getValueAt(selectedRow, 0); // ID Pembelian
 
-            // Set Tanggal ke JDateChooser
-            try {
-                Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggalStr);
-                txtTanggal.setDate(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Format tanggal di tabel tidak valid: " + tanggalStr, "Error", JOptionPane.ERROR_MESSAGE);
-            }
+        String id_supp_str_from_table = tblpembelian.getValueAt(selectedRow, 1).toString(); // ID Supplier (String)
+        String tanggalStr = tblpembelian.getValueAt(selectedRow, 6).toString(); // Tanggal
+        String totalStr = tblpembelian.getValueAt(selectedRow, 8).toString(); // totalH
+        String keterangan = tblpembelian.getValueAt(selectedRow, 9).toString(); // Keterangan
+        String HargaPkg = tblpembelian.getValueAt(selectedRow, 7).toString();
 
-            // Set Total dan Keterangan
-            txtTotal.setText(totalStr);
-            txtKeterangan.setText(keterangan);
+        // Perbaikan parsing
+        double total = Double.parseDouble(totalStr);
+        double hrga = Double.parseDouble(HargaPkg);
+        int stok = (int) (total / hrga);  // Dibulatkan ke bawah
 
-            // Set cmbSupplier dan pemicu displaySelectedSupplierDetails()
-            DefaultComboBoxModel<ModelDataSupplier> cmbModel = (DefaultComboBoxModel<ModelDataSupplier>) cmbSupplier.getModel();
-            for (int i = 0; i < cmbModel.getSize(); i++) {
-                ModelDataSupplier s = cmbModel.getElementAt(i);
-                // Perbandingan id_supplier sebagai String
-                if (s.getId_supplier().equals(id_supp_str_from_table)) {
-                    cmbSupplier.setSelectedItem(s);
-                    break;
-                }
-            }
-            // txtPerus dan txtTelp akan otomatis terisi oleh displaySelectedSupplierDetails()
+        // Set tanggal ke DateChooser
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(tanggalStr);
+            txtTanggal.setDate(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Format tanggal di tabel tidak valid: " + tanggalStr, "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        txtHargap.setText(HargaPkg);
+        txtStok.setText(String.valueOf(stok));
+        txtTotal.setText(totalStr);
+        txtKeterangan.setText(keterangan);
+
+        // Set comboBox supplier
+        DefaultComboBoxModel<ModelDataSupplier> cmbModel = (DefaultComboBoxModel<ModelDataSupplier>) cmbSupplier.getModel();
+        for (int i = 0; i < cmbModel.getSize(); i++) {
+            ModelDataSupplier s = cmbModel.getElementAt(i);
+            if (s.getId_supplier().equals(id_supp_str_from_table)) {
+                cmbSupplier.setSelectedItem(s);
+                break;
+            }
+        }
+    }
     }//GEN-LAST:event_tblpembelianMouseClicked
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
@@ -418,7 +423,8 @@ private int selectedPembelianId = -1;
             return;
         }
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        String NamaB = (String) cmbBarang.getSelectedItem();
+        Modelbarang selectedBarang = (Modelbarang) cmbBarang.getSelectedItem(); 
+        String NamaB = selectedBarang.getNamaBahan();
         String Hargapkg = txtHargap.getText();
         String totalHargaStr = txtTotal.getText();
         String keterangan = txtKeterangan.getText();
@@ -440,44 +446,75 @@ private int selectedPembelianId = -1;
             int idSupplier = Integer.parseInt(selectedSupplier.getId_supplier());
 
             if (isEditing) {
-                updatePembelian(sqlDate, total, keterangan, idSupplier);
+            if (selectedPembelianId <= 0) {
+                JOptionPane.showMessageDialog(this, "ID pembelian tidak valid!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            updatePembelian(sqlDate, total, keterangan, idSupplier);
+            updateKeuangan(sqlDate, total, selectedPembelianId);
+        } else {
+            int idBarang = InsertBarang(sqlDate, HargaP, Stok, keterangan, kategoriB, NamaB, idSupplier);
+            if (idBarang != -1) {
+                int idPembelian = insertPembelian(sqlDate, total, keterangan, idSupplier, idBarang);
+                if (idPembelian != -1) {
+                    InsertBeli(sqlDate, total, idPembelian);
+                }
             } else {
-    int idBarang = InsertBarang(sqlDate, HargaP, Stok, keterangan, kategoriB, NamaB, idSupplier);
-    if (idBarang != -1) {
-        insertPembelian(sqlDate, total, keterangan, idSupplier, idBarang);
-    } else {
-        JOptionPane.showMessageDialog(this, "Gagal mendapatkan ID barang!", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-            clearForm();
-            initTableData();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Total Harga harus angka.", "Error Format", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Gagal mendapatkan ID barang!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
+        clearForm();
+        initTableData();
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Total Harga dan Harga per kg harus berupa angka.", "Error Format", JOptionPane.ERROR_MESSAGE);
+    }
+
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    private void insertPembelian(java.sql.Date tanggal, double total, String keterangan, int idSupplier, int idBarang) {
-        String sql = "INSERT INTO pembelian (tanggal, total, keterangan, id_supplier, id_barang) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = konek.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    private int insertPembelian(java.sql.Date tanggal, double total, String keterangan, int idSupplier, int idBarang) {
+    String sql = "INSERT INTO pembelian (tanggal, total, keterangan, id_supplier, id_barang) VALUES (?, ?, ?, ?, ?)";
+    try (Connection conn = konek.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setDate(1, tanggal);
-            stmt.setDouble(2, total);
-            stmt.setString(3, keterangan);
-            stmt.setInt(4, idSupplier);
-            stmt.setInt(5, idBarang);
+        stmt.setDate(1, tanggal);
+        stmt.setDouble(2, total);
+        stmt.setString(3, keterangan);
+        stmt.setInt(4, idSupplier);
+        stmt.setInt(5, idBarang);
 
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Pembelian berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal menambahkan pembelian.", "Error", JOptionPane.ERROR_MESSAGE);
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows > 0) {
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(this, "Pembelian berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                    return rs.getInt(1); // return id_pembelian
+                }
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error database saat menambah: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error saat menambah pembelian: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+    return -1;
+}
+    private void InsertBeli(java.sql.Date tanggal, double total, int idPembelian) {
+    String sql = "INSERT INTO keuangan (tanggal, tipe, jumlah, id_pembelian) VALUES (?, ?, ?, ?)";
+    try (Connection conn = konek.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setDate(1, tanggal);
+        stmt.setString(2, "Pengeluaran Harian");
+        stmt.setDouble(3, total);
+        stmt.setInt(4, idPembelian);
+
+        stmt.executeUpdate();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan keuangan: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+}
     private int InsertBarang(java.sql.Date tanggal, double HargaP, double Stok, String keterangan, String kategoriB, String NamaB, int idSupplier) {
     String sql = "INSERT INTO barang (id_supplier, nama_bahan, jenis_bahan, stok, hargapkg, keterangan, tanggal) VALUES (?, ?, ?, ?, ?, ?, ?)";
     try (Connection conn = konek.getConnection();
@@ -513,27 +550,42 @@ private int selectedPembelianId = -1;
     
 
     private void updatePembelian(java.sql.Date tanggal, double total, String keterangan, int idSupplier) {
-        String sql = "UPDATE pembelian SET tanggal=?, total=?, keterangan=?, id_supplier=? WHERE id_pembelian=?";
-        try (Connection conn = konek.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+    String sql = "UPDATE pembelian SET tanggal=?, total=?, keterangan=?, id_supplier=? WHERE id_pembelian=?";
+    try (Connection conn = konek.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            
-            stmt.setDouble(2, total);
-            stmt.setString(3, keterangan);
-            stmt.setInt(4, idSupplier);
-            stmt.setInt(5, selectedPembelianId);
+        stmt.setDate(1, tanggal);
+        stmt.setDouble(2, total);
+        stmt.setString(3, keterangan);
+        stmt.setInt(4, idSupplier);
+        stmt.setInt(5, selectedPembelianId);
 
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows > 0) {
-                JOptionPane.showMessageDialog(this, "Pembelian berhasil diupdate!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Gagal mengupdate pembelian.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error database saat update: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows > 0) {
+            JOptionPane.showMessageDialog(this, "Pembelian berhasil diupdate!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal mengupdate pembelian.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error database saat update: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+}
+    private void updateKeuangan(java.sql.Date tanggal, double total, int idPembelian) {
+    String sql = "UPDATE keuangan SET tanggal=?, jumlah=? WHERE id_pembelian=?";
+    try (Connection conn = konek.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setDate(1, tanggal);
+        stmt.setDouble(2, total);
+        stmt.setInt(3, idPembelian);
+
+        stmt.executeUpdate();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal mengupdate keuangan: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+}
     private void initListeners() {
         // ActionListener untuk cmbBarang
         cmbBarang.addActionListener(new ActionListener() {

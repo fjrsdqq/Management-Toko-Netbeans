@@ -8,13 +8,15 @@ public class ModelResep {
     private int idResep;
     private String namaResep;
     private String namaPelanggan;
+    private double hargat;
     private String tanggal;
     private String keterangan;
     //new Object[]{"ID","IDS", "Nama Ikan", "Tanggal","Harga/kg", "Stok(kg)", "Keterangan"}
-    public ModelResep(int idResep, String namaResep, String namaPelanggan, String tanggal, String keterangan) {
+    public ModelResep(int idResep, String namaResep, String namaPelanggan,double hargat, String tanggal, String keterangan) {
         this.idResep = idResep;
         this.namaResep = namaResep;
         this.namaPelanggan =namaPelanggan;
+        this.hargat = hargat;
         this.tanggal = tanggal;
         this.keterangan = keterangan;
     }
@@ -24,6 +26,7 @@ public class ModelResep {
             idResep,
             namaResep,
             namaPelanggan,
+            hargat,
             tanggal,
             keterangan
         };
@@ -51,6 +54,13 @@ public class ModelResep {
 
     public void setnamaPelanggan(String namaPelanggan) {
         this.namaPelanggan = namaPelanggan;
+    }
+    
+    public double gethargat(double hargat){
+        return hargat;
+    }
+    public void sethargat(double hargat){
+        this.hargat = hargat;
     }
 
     public String getTanggal() {

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 15 Jun 2025 pada 05.52
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Jun 22, 2025 at 02:38 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `admin`
+-- Table structure for table `admin`
 --
 
 CREATE TABLE `admin` (
@@ -36,7 +36,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `admin`
+-- Dumping data for table `admin`
 --
 
 INSERT INTO `admin` (`id_admins`, `nama`, `username`, `password`, `role`) VALUES
@@ -46,7 +46,7 @@ INSERT INTO `admin` (`id_admins`, `nama`, `username`, `password`, `role`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `barang`
+-- Table structure for table `barang`
 --
 
 CREATE TABLE `barang` (
@@ -61,7 +61,7 @@ CREATE TABLE `barang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `barang`
+-- Dumping data for table `barang`
 --
 
 INSERT INTO `barang` (`id_barang`, `id_supplier`, `nama_bahan`, `jenis_bahan`, `stok`, `hargapkg`, `keterangan`, `tanggal`) VALUES
@@ -78,27 +78,43 @@ INSERT INTO `barang` (`id_barang`, `id_supplier`, `nama_bahan`, `jenis_bahan`, `
 (16, 3, 'Sapu-sapu', 'Ikan', 15.00, 10000.00, 'segar', '2025-06-10'),
 (17, 1, 'MSG Sasa', 'Bumbu', 10.00, 20000.00, 'Baru', '2025-06-10'),
 (18, 6, 'Merica', 'Bumbu', 16.67, 15000.00, 'baru', '2025-06-10'),
-(19, 7, 'Lada', 'Bumbu', 17.14, 14000.00, 'baru', '2025-06-10'),
-(20, 3, 'Gula', 'Bumbu', 2.17, 23000.00, 'baru', '2025-06-10');
+(19, 1, 'Lada', 'Bumbu', 17.14, 14000.00, 'baru', '2025-06-10'),
+(20, 3, 'Gula', 'Bumbu', 2.17, 23000.00, 'baru', '2025-06-10'),
+(21, 3, 'Lele', 'Ikan', 2.00, 35000.00, 'dsa', '2025-06-22'),
+(22, 3, 'Gurame', 'Ikan', 2.00, 25000.00, 'das', '2025-06-22');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `detail_resep`
+-- Table structure for table `detail_resep`
 --
 
 CREATE TABLE `detail_resep` (
   `id_detail` int(11) NOT NULL,
   `id_resep` int(11) NOT NULL,
   `id_barang` int(11) NOT NULL,
+  `hargapkg` decimal(15,2) NOT NULL,
   `jumlah` varchar(50) DEFAULT NULL,
   `tanggal` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `detail_resep`
+--
+
+INSERT INTO `detail_resep` (`id_detail`, `id_resep`, `id_barang`, `hargapkg`, `jumlah`, `tanggal`) VALUES
+(8, 3, 7, 20000.00, '2', '2025-06-22'),
+(9, 3, 9, 50000.00, '2', '2025-06-22'),
+(10, 3, 8, 11000.00, '1', '2025-06-22'),
+(11, 3, 13, 15000.00, '1', '2025-06-22'),
+(12, 3, 7, 10000.00, '1', '2025-06-22'),
+(13, 3, 6, 24000.00, '2', '2025-06-22'),
+(14, 3, 6, 24000.00, '2', '2025-06-22');
+
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `karyawan`
+-- Table structure for table `karyawan`
 --
 
 CREATE TABLE `karyawan` (
@@ -113,29 +129,28 @@ CREATE TABLE `karyawan` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `keuangan`
+-- Table structure for table `keuangan`
 --
 
 CREATE TABLE `keuangan` (
   `id_keuangan` int(11) NOT NULL,
   `tanggal` date NOT NULL,
   `tipe` enum('Pemasukan Harian','Pengeluaran Harian') NOT NULL,
-  `keterangan` text DEFAULT NULL,
-  `jumlah` decimal(15,2) NOT NULL
+  `jumlah` decimal(15,2) NOT NULL,
+  `id_pembelian` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `keuangan`
+-- Dumping data for table `keuangan`
 --
 
-INSERT INTO `keuangan` (`id_keuangan`, `tanggal`, `tipe`, `keterangan`, `jumlah`) VALUES
-(1, '2025-04-28', 'Pengeluaran Harian', 'somay', 1000000000.00),
-(2, '2025-04-28', 'Pemasukan Harian', 'bakso', 10000000.00);
+INSERT INTO `keuangan` (`id_keuangan`, `tanggal`, `tipe`, `jumlah`, `id_pembelian`) VALUES
+(3, '2025-06-22', 'Pengeluaran Harian', 50000.00, 22);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pelanggan`
+-- Table structure for table `pelanggan`
 --
 
 CREATE TABLE `pelanggan` (
@@ -147,7 +162,7 @@ CREATE TABLE `pelanggan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `pelanggan`
+-- Dumping data for table `pelanggan`
 --
 
 INSERT INTO `pelanggan` (`id_pelanggan`, `nama_pelanggan`, `no_hp`, `alamat`, `perusahaan`) VALUES
@@ -161,7 +176,7 @@ INSERT INTO `pelanggan` (`id_pelanggan`, `nama_pelanggan`, `no_hp`, `alamat`, `p
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pembelian`
+-- Table structure for table `pembelian`
 --
 
 CREATE TABLE `pembelian` (
@@ -174,7 +189,7 @@ CREATE TABLE `pembelian` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `pembelian`
+-- Dumping data for table `pembelian`
 --
 
 INSERT INTO `pembelian` (`id_pembelian`, `id_supplier`, `id_barang`, `tanggal`, `total`, `keterangan`) VALUES
@@ -182,7 +197,6 @@ INSERT INTO `pembelian` (`id_pembelian`, `id_supplier`, `id_barang`, `tanggal`, 
 (7, 2, 7, '2025-06-06', 250000.00, 'Baru'),
 (8, 2, 8, '2025-06-04', 120000.00, 'Bagus'),
 (9, 1, 9, '2025-06-10', 50000.00, 'Segar'),
-(10, 3, 10, '2025-06-11', 90000.00, 'Segars'),
 (11, 2, 11, '2025-06-10', 120000.00, 'frozen'),
 (12, 1, 12, '2025-06-10', 120000.00, 'Baru'),
 (13, 2, 13, '2025-06-10', 300000.00, 'Baru'),
@@ -191,13 +205,15 @@ INSERT INTO `pembelian` (`id_pembelian`, `id_supplier`, `id_barang`, `tanggal`, 
 (16, 3, 16, '2025-06-10', 150000.00, 'segar'),
 (17, 1, 17, '2025-06-10', 200000.00, 'Baru'),
 (18, 6, 18, '2025-06-10', 250000.00, 'baru'),
-(19, 7, 19, '2025-06-10', 240000.00, 'baru'),
-(20, 3, 20, '2025-06-10', 50000.00, 'baru');
+(19, NULL, 19, '2025-06-10', 240000.00, 'baru'),
+(20, 3, 20, '2025-06-10', 50000.00, 'baru'),
+(21, 3, 21, '2025-06-22', 70000.00, 'dsa'),
+(22, 3, 22, '2025-06-22', 50000.00, 'das');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `penjualan`
+-- Table structure for table `penjualan`
 --
 
 CREATE TABLE `penjualan` (
@@ -213,28 +229,29 @@ CREATE TABLE `penjualan` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `resep`
+-- Table structure for table `resep`
 --
 
 CREATE TABLE `resep` (
   `id_resep` int(11) NOT NULL,
   `id_pelanggan` int(11) NOT NULL,
   `nama_resep` varchar(100) NOT NULL,
+  `harga` decimal(15,2) NOT NULL,
   `tanggal` date DEFAULT NULL,
   `keterangan` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `resep`
+-- Dumping data for table `resep`
 --
 
-INSERT INTO `resep` (`id_resep`, `id_pelanggan`, `nama_resep`, `tanggal`, `keterangan`) VALUES
-(2, 5, 'pempek', '2025-06-20', 'pesen pempek biasa');
+INSERT INTO `resep` (`id_resep`, `id_pelanggan`, `nama_resep`, `harga`, `tanggal`, `keterangan`) VALUES
+(3, 3, 'Siomay', 154000.00, '2025-06-18', 'baru');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `supplier`
+-- Table structure for table `supplier`
 --
 
 CREATE TABLE `supplier` (
@@ -247,20 +264,20 @@ CREATE TABLE `supplier` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `supplier`
+-- Dumping data for table `supplier`
 --
 
 INSERT INTO `supplier` (`id_supplier`, `nama_supplier`, `alamat`, `no_hp`, `perusahaan`, `keterangan`) VALUES
-(1, 'Supplier A', 'Jl. Mawar No.1', '081234567890', 'PT Cucurak Fajar Utama', 'Blm Dibayar wak'),
-(2, 'Bagus', 'Jl knpo no 1', '09890231', 'Pt. Adi Jaya2', 'dsadasdas'),
-(3, 'Fadel', 'Jl. Mawar No.1', '081234567890', 'PT Cucurak Fajar Utama', 'Blm Dibayar wak'),
-(6, 'Aulif', 'PGC Cililitan', '8903183131', 'PT Gunung Mas', 'Lunas'),
-(7, 'Dicky', 'Condet, Jakarta Timur', '09883713131', 'PT Timur Tengah Jaya', 'Lunas');
+(1, 'Chelsea, Bumbu', 'Jl. Mawar No.1', '081234567890', 'PT Cucurak Fajar Utama', 'Blm Dibayar wak'),
+(2, 'Bagus Bumbu', 'Jl knpo no 1', '09890231', 'Pt. Adi Jaya2', 'dsadasdas'),
+(3, 'Fadel Ikan 2', 'Jl. Mawar No.1', '081234567890', 'PT Cucurak Fajar Utama', 'Blm Dibayar wak'),
+(6, 'Aulif Tepung', 'PGC Cililitan', '8903183131', 'PT Gunung Mas', 'Lunas'),
+(8, 'Dicky Ikan', 'Condet, Jakarta Timur', '09883713131', 'PT Timur Tengah Jaya', 'Lunas');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `transaksi_pelanggan`
+-- Table structure for table `transaksi_pelanggan`
 --
 
 CREATE TABLE `transaksi_pelanggan` (
@@ -276,21 +293,21 @@ CREATE TABLE `transaksi_pelanggan` (
 --
 
 --
--- Indeks untuk tabel `admin`
+-- Indexes for table `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id_admins`) USING BTREE,
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- Indeks untuk tabel `barang`
+-- Indexes for table `barang`
 --
 ALTER TABLE `barang`
   ADD PRIMARY KEY (`id_barang`),
   ADD KEY `id_supplier` (`id_supplier`);
 
 --
--- Indeks untuk tabel `detail_resep`
+-- Indexes for table `detail_resep`
 --
 ALTER TABLE `detail_resep`
   ADD PRIMARY KEY (`id_detail`),
@@ -298,25 +315,26 @@ ALTER TABLE `detail_resep`
   ADD KEY `id_barang` (`id_barang`);
 
 --
--- Indeks untuk tabel `karyawan`
+-- Indexes for table `karyawan`
 --
 ALTER TABLE `karyawan`
   ADD PRIMARY KEY (`id_karyawan`);
 
 --
--- Indeks untuk tabel `keuangan`
+-- Indexes for table `keuangan`
 --
 ALTER TABLE `keuangan`
-  ADD PRIMARY KEY (`id_keuangan`);
+  ADD PRIMARY KEY (`id_keuangan`),
+  ADD KEY `id_pembelians` (`id_pembelian`);
 
 --
--- Indeks untuk tabel `pelanggan`
+-- Indexes for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
   ADD PRIMARY KEY (`id_pelanggan`);
 
 --
--- Indeks untuk tabel `pembelian`
+-- Indexes for table `pembelian`
 --
 ALTER TABLE `pembelian`
   ADD PRIMARY KEY (`id_pembelian`),
@@ -324,140 +342,146 @@ ALTER TABLE `pembelian`
   ADD KEY `id_barang` (`id_barang`);
 
 --
--- Indeks untuk tabel `penjualan`
+-- Indexes for table `penjualan`
 --
 ALTER TABLE `penjualan`
   ADD PRIMARY KEY (`id_penjualan`),
   ADD KEY `id_pelanggan` (`id_pelanggan`);
 
 --
--- Indeks untuk tabel `resep`
+-- Indexes for table `resep`
 --
 ALTER TABLE `resep`
   ADD PRIMARY KEY (`id_resep`),
   ADD KEY `id_pelanggan` (`id_pelanggan`);
 
 --
--- Indeks untuk tabel `supplier`
+-- Indexes for table `supplier`
 --
 ALTER TABLE `supplier`
   ADD PRIMARY KEY (`id_supplier`);
 
 --
--- Indeks untuk tabel `transaksi_pelanggan`
+-- Indexes for table `transaksi_pelanggan`
 --
 ALTER TABLE `transaksi_pelanggan`
   ADD PRIMARY KEY (`id_transaksi`),
   ADD KEY `id_pelanggan` (`id_pelanggan`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `admin`
+-- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id_admins` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `barang`
+-- AUTO_INCREMENT for table `barang`
 --
 ALTER TABLE `barang`
-  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_barang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT untuk tabel `detail_resep`
+-- AUTO_INCREMENT for table `detail_resep`
 --
 ALTER TABLE `detail_resep`
-  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT untuk tabel `karyawan`
+-- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
   MODIFY `id_karyawan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `keuangan`
+-- AUTO_INCREMENT for table `keuangan`
 --
 ALTER TABLE `keuangan`
-  MODIFY `id_keuangan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_keuangan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `pelanggan`
+-- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
   MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT untuk tabel `pembelian`
+-- AUTO_INCREMENT for table `pembelian`
 --
 ALTER TABLE `pembelian`
-  MODIFY `id_pembelian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_pembelian` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT untuk tabel `penjualan`
+-- AUTO_INCREMENT for table `penjualan`
 --
 ALTER TABLE `penjualan`
   MODIFY `id_penjualan` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `resep`
+-- AUTO_INCREMENT for table `resep`
 --
 ALTER TABLE `resep`
-  MODIFY `id_resep` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_resep` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `supplier`
+-- AUTO_INCREMENT for table `supplier`
 --
 ALTER TABLE `supplier`
-  MODIFY `id_supplier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_supplier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT untuk tabel `transaksi_pelanggan`
+-- AUTO_INCREMENT for table `transaksi_pelanggan`
 --
 ALTER TABLE `transaksi_pelanggan`
   MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `barang`
+-- Constraints for table `barang`
 --
 ALTER TABLE `barang`
   ADD CONSTRAINT `id_supplier` FOREIGN KEY (`id_supplier`) REFERENCES `supplier` (`id_supplier`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `detail_resep`
+-- Constraints for table `detail_resep`
 --
 ALTER TABLE `detail_resep`
   ADD CONSTRAINT `detail_resep_ibfk_1` FOREIGN KEY (`id_resep`) REFERENCES `resep` (`id_resep`),
   ADD CONSTRAINT `detail_resep_ibfk_2` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id_barang`);
 
 --
--- Ketidakleluasaan untuk tabel `pembelian`
+-- Constraints for table `keuangan`
+--
+ALTER TABLE `keuangan`
+  ADD CONSTRAINT `id_pembelians` FOREIGN KEY (`id_pembelian`) REFERENCES `pembelian` (`id_pembelian`);
+
+--
+-- Constraints for table `pembelian`
 --
 ALTER TABLE `pembelian`
   ADD CONSTRAINT `id_barang` FOREIGN KEY (`id_barang`) REFERENCES `barang` (`id_barang`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `pembelian_ibfk_1` FOREIGN KEY (`id_supplier`) REFERENCES `supplier` (`id_supplier`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `penjualan`
+-- Constraints for table `penjualan`
 --
 ALTER TABLE `penjualan`
   ADD CONSTRAINT `penjualan_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `resep`
+-- Constraints for table `resep`
 --
 ALTER TABLE `resep`
   ADD CONSTRAINT `resep_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`);
 
 --
--- Ketidakleluasaan untuk tabel `transaksi_pelanggan`
+-- Constraints for table `transaksi_pelanggan`
 --
 ALTER TABLE `transaksi_pelanggan`
   ADD CONSTRAINT `transaksi_pelanggan_ibfk_1` FOREIGN KEY (`id_pelanggan`) REFERENCES `pelanggan` (`id_pelanggan`) ON DELETE CASCADE ON UPDATE CASCADE;

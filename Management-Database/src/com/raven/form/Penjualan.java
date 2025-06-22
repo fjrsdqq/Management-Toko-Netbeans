@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -26,6 +28,9 @@ public class Penjualan extends javax.swing.JPanel {
     com.raven.component.koneksi konek = new com.raven.component.koneksi();
     public Penjualan() {
         initComponents();
+        loadNamaPelanggan();
+        loadResep();
+        loadhargaresep();
         table1.fixTable(jScrollPane1);
         setOpaque(false);
         initData();
@@ -72,7 +77,8 @@ public class Penjualan extends javax.swing.JPanel {
                        + "tanggal LIKE ? OR "
                        + "total LIKE ? OR "
                        + "keterangan LIKE ? OR "
-                       + "nama_pelanggan LIKE ?";
+                       + "nama_pelanggan LIKE ? OR"
+                       + "resep LIKE ?";
             PreparedStatement ps = conn.prepareStatement(sql);
 
             for (int i = 1; i <= 6; i++) {
@@ -87,9 +93,10 @@ public class Penjualan extends javax.swing.JPanel {
                 ModelDataPenjualan data = new ModelDataPenjualan(
                     rs.getString("id_penjualan"),
                     rs.getString("id_pelanggan"),
-                    rs.getString("tanggal"),
                     rs.getString("nama_pelanggan"),
+                    rs.getString("resep"),
                     rs.getDouble("total"),
+                    rs.getString("tanggal"),
                     rs.getString("keterangan")
                     
                 );
@@ -108,18 +115,60 @@ public class Penjualan extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data.");
         }
     }
-    
 
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
             new Object[]{"ID", "ID Pelanggan", "Nama", "Resep", "Total Harga","Tanggal", "Keterangan"}, 0
         );
-
-    
-        
+        table1.setModel(model);
     }
+    private void loadNamaPelanggan() {
+        try (Connection conn = konek.getConnection();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT nama_pelanggan FROM pelanggan")) {
 
+            cbxpelanggan.removeAllItems();
+            while (rs.next()) {
+                cbxpelanggan.addItem(rs.getString("nama_pelanggan"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal load pelanggan: " + e.getMessage());
+        }
+    }
+         
+    private void loadResep() {
+        try (Connection conn = konek.getConnection();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT nama_resep FROM resep")) {
+
+            cbxresep.removeAllItems();
+            while (rs.next()) {
+                cbxresep.addItem(rs.getString("nama_resep"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal load resep: " + e.getMessage());
+        }
+    }
     
+    private void loadhargaresep() {
+    try (Connection conn = konek.getConnection()) {
+        String query = "SELECT harga FROM resep WHERE nama_resep = ?";
+        PreparedStatement pst = conn.prepareStatement(query);
+        String resepTerpilih = cbxresep.getSelectedItem().toString();
+        pst.setString(1, resepTerpilih);
+
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            String harga = rs.getString("harga");
+            txtharga.setText(harga); // Jika txtharga adalah JTextField
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal load harga: " + e.getMessage());
+    }
+}
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -141,14 +190,14 @@ public class Penjualan extends javax.swing.JPanel {
         jLabel16 = new javax.swing.JLabel();
         txtharga = new javax.swing.JTextField();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
-        cbxkategori = new javax.swing.JComboBox<>();
+        cbxresep = new javax.swing.JComboBox<>();
         txtketerangan = new javax.swing.JTextField();
         btnsave = new javax.swing.JButton();
         btnedit = new javax.swing.JButton();
         btndelete = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbxpelanggan = new javax.swing.JComboBox<>();
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(4, 72, 210));
@@ -161,6 +210,14 @@ public class Penjualan extends javax.swing.JPanel {
         jLabel5.setText("Data Penjualan");
         jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 1));
 
+        table1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
         jScrollPane1.setViewportView(table1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -210,10 +267,9 @@ public class Penjualan extends javax.swing.JPanel {
             }
         });
 
-        cbxkategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Perorangan", "Perusahaan" }));
-        cbxkategori.addActionListener(new java.awt.event.ActionListener() {
+        cbxresep.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxkategoriActionPerformed(evt);
+                cbxresepActionPerformed(evt);
             }
         });
 
@@ -248,7 +304,7 @@ public class Penjualan extends javax.swing.JPanel {
 
         jLabel10.setText("Pelanggan");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbxpelanggan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -294,9 +350,9 @@ public class Penjualan extends javax.swing.JPanel {
                                 .addGap(18, 18, 18)
                                 .addComponent(btndelete))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(cbxpelanggan, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtharga, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(cbxkategori, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(cbxresep, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(txtketerangan, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -316,9 +372,8 @@ public class Penjualan extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cbxkategori, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel15)))
+                    .addComponent(cbxresep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
@@ -330,7 +385,7 @@ public class Penjualan extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel17)
                             .addComponent(jLabel10)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(cbxpelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -357,9 +412,93 @@ public class Penjualan extends javax.swing.JPanel {
     }//GEN-LAST:event_txtketeranganActionPerformed
 
     private void btnsaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsaveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnsaveActionPerformed
+        try (Connection conn = konek.getConnection()) {
+        conn.setAutoCommit(false);
 
+        // 1. Ambil data dari form
+        String namaResep = cbxresep.getSelectedItem().toString();
+        String idPelanggan = cbxpelanggan.getSelectedItem().toString();
+        String harga = txtharga.getText();
+        String keterangan = txtketerangan.getText();
+        java.sql.Date sqlDate = new java.sql.Date(jDateChooser1.getDate().getTime());
+
+        // 2. Cari id_resep dari nama_resep
+        String idResep = "";
+        String sqlCariId = "SELECT id_resep FROM resep WHERE nama_resep = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sqlCariId)) {
+            pst.setString(1, namaResep);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                idResep = rs.getString("id_resep");
+            } else {
+                JOptionPane.showMessageDialog(this, "Resep tidak ditemukan!");
+                return;
+            }
+        }
+
+        // 3. Simpan data ke tabel penjualan (hanya nama_resep)
+        String sqlInsert = "INSERT INTO penjualan (id_pelanggan, nama_resep, harga, tanggal, keterangan) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pst = conn.prepareStatement(sqlInsert)) {
+            pst.setString(1, idPelanggan);
+            pst.setString(2, namaResep);
+            pst.setString(3, harga);
+            pst.setDate(4, sqlDate);
+            pst.setString(5, keterangan);
+            pst.executeUpdate();
+        }
+
+        // 4. Update stok barang berdasarkan detail_resep
+        String sqlDetail = "SELECT id_barang, jumlah_barang FROM detail_resep WHERE id_resep = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sqlDetail)) {
+            pst.setString(1, idResep);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                String idBarang = rs.getString("id_barang");
+                int jumlahPakai = rs.getInt("jumlah_barang");
+
+                String updateStok = "UPDATE barang SET stok = stok - ? WHERE id_barang = ?";
+                try (PreparedStatement pstUpdate = conn.prepareStatement(updateStok)) {
+                    pstUpdate.setInt(1, jumlahPakai);
+                    pstUpdate.setString(2, idBarang);
+                    pstUpdate.executeUpdate();
+                }
+            }
+        }
+
+        conn.commit();
+        JOptionPane.showMessageDialog(this, "Penjualan berhasil disimpan dan stok barang dikurangi.");
+
+        // Tambah ke tabel UI
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        model.addRow(new Object[]{
+            model.getRowCount() + 1,
+            idPelanggan,
+            cbxpelanggan.getSelectedItem().toString(),
+            namaResep,
+            harga,
+            new SimpleDateFormat("yyyy-MM-dd").format(sqlDate),
+            keterangan
+        });
+
+        clearForm();
+
+    } catch (Exception e) {
+        try {
+            konek.getConnection().rollback();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Rollback error: " + ex.getMessage());
+        }
+        JOptionPane.showMessageDialog(this, "Gagal menyimpan data: " + e.getMessage());
+    }
+    }//GEN-LAST:event_btnsaveActionPerformed
+    private void clearForm() {
+        cbxresep.setSelectedIndex(0);
+        txtharga.setText("");
+        cbxpelanggan.setSelectedIndex(0);
+        txtketerangan.setText("");
+        jDateChooser1.setDate(null);
+    }
     private void btneditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btneditActionPerformed
@@ -368,16 +507,16 @@ public class Penjualan extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_btndeleteActionPerformed
 
-    private void cbxkategoriActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxkategoriActionPerformed
+    private void cbxresepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxresepActionPerformed
         
-    }//GEN-LAST:event_cbxkategoriActionPerformed
+    }//GEN-LAST:event_cbxresepActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndelete;
     private javax.swing.JButton btnedit;
     private javax.swing.JButton btnsave;
-    private javax.swing.JComboBox<String> cbxkategori;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbxpelanggan;
+    private javax.swing.JComboBox<String> cbxresep;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

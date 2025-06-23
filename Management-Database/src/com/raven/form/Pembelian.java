@@ -143,15 +143,20 @@ private int selectedPembelianId = -1;
         jLabel5.setText("Data Pembelian");
         jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 10, 1, 1));
 
+        tblpembelian.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
         tblpembelian.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblpembelianMouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(tblpembelian);
-        if (tblpembelian.getColumnModel().getColumnCount() > 0) {
-            tblpembelian.getColumnModel().getColumn(0).setPreferredWidth(150);
-        }
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);

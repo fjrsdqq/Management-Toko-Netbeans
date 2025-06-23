@@ -6,18 +6,18 @@ package com.raven.model;
 
 /**
  *
- * @author ferdi
+ * @author kel3
  */
 public class ModelDataPenjualan {
-    private String id_penjualan;
-    private String id_pelanggan;
+    private int id_penjualan;
+    private int id_pelanggan;
     private String nama_pelanggan;
     private String resep;
     private Double total;
     private String tanggal;
     private String keterangan;
     
-    public ModelDataPenjualan(String id_penjualan, String id_pelanggan,  String nama_pelanggan, String resep, Double total, String tanggal, String keterangan) {
+    public ModelDataPenjualan(int id_penjualan, int id_pelanggan,  String nama_pelanggan, String resep, Double total, String tanggal, String keterangan) {
         
         this.id_penjualan = id_penjualan;
         this.id_pelanggan = id_pelanggan;
@@ -32,19 +32,19 @@ public class ModelDataPenjualan {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }**/
 
-    public String getid_penjualan() {
+    public int getid_penjualan() {
         return id_penjualan;
     }
 
-    public void setid_penjualan(String id_penjualan) {
+    public void setid_penjualan(int id_penjualan) {
         this.id_penjualan = id_penjualan;
     }
 
-    public String getid_pelanggan() {
+    public int getid_pelanggan() {
         return id_pelanggan;
     }
 
-    public void setid_pelanggan(String id_pelanggan) {
+    public void setid_pelanggan(int id_pelanggan) {
         this.id_pelanggan = id_pelanggan;
     }
 

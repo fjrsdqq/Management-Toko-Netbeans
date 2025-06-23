@@ -38,6 +38,8 @@ public class Penjualan extends javax.swing.JPanel {
 
     private void initData() {
         initTableData();
+        tampilkanSemuaData();
+        
         txtsearch.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -58,16 +60,14 @@ public class Penjualan extends javax.swing.JPanel {
     
     private void performSearch() {
         String keyword = txtsearch.getText().trim();
+        
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        model.setRowCount(0); // Bersihkan tabel
 
         if (keyword.isEmpty()) {
-            initTableData(); // Menampilkan semua data jika input kosong
-            return;
+        tampilkanSemuaData(); // Kalau kosong, tampilkan semua
+        return;
         }
-
-        DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "ID Pelanggan", "Nama", "Resep", "Total Harga","Tanggal", "Keterangan"}, 0
-        );
-        table1.setModel(model);
 
         try {
             Connection conn = konek.getConnection();
@@ -81,7 +81,7 @@ public class Penjualan extends javax.swing.JPanel {
                        + "resep LIKE ?";
             PreparedStatement ps = conn.prepareStatement(sql);
 
-            for (int i = 1; i <= 6; i++) {
+            for (int i = 1; i <= 7; i++) {
                 ps.setString(i, "%" + keyword + "%");
             }
 
@@ -91,8 +91,8 @@ public class Penjualan extends javax.swing.JPanel {
             while (rs.next()) {
                 rowCount++;
                 ModelDataPenjualan data = new ModelDataPenjualan(
-                    rs.getString("id_penjualan"),
-                    rs.getString("id_pelanggan"),
+                    rs.getInt("id_penjualan"),
+                    rs.getInt("id_pelanggan"),
                     rs.getString("nama_pelanggan"),
                     rs.getString("resep"),
                     rs.getDouble("total"),
@@ -122,6 +122,37 @@ public class Penjualan extends javax.swing.JPanel {
         );
         table1.setModel(model);
     }
+    
+    private void tampilkanSemuaData() {
+    DefaultTableModel model = (DefaultTableModel) table1.getModel();
+    model.setRowCount(0); // Bersihkan isi tabel
+
+    try {
+        Connection conn = konek.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM penjualan ORDER BY id_penjualan DESC");
+        
+        while (rs.next()) {
+            ModelDataPenjualan data = new ModelDataPenjualan(
+                rs.getInt("id_penjualan"),
+                rs.getInt("id_pelanggan"),
+                rs.getString("nama_pelanggan"),
+                rs.getString("nama_resep"),
+                rs.getDouble("total"),
+                rs.getString("tanggal"),
+                rs.getString("keterangan")
+            );
+            model.addRow(data.toRowTable());
+        }
+
+        rs.close();
+        stmt.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Gagal menampilkan semua data.");
+    }
+}
+    
     private void loadNamaPelanggan() {
         try (Connection conn = konek.getConnection();
             Statement st = conn.createStatement();
@@ -135,8 +166,9 @@ public class Penjualan extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Gagal load pelanggan: " + e.getMessage());
         }
     }
-         
+    private boolean isLoadingResep = false;     
     private void loadResep() {
+        isLoadingResep = true; // agar listener tahu sedang mengisi data
         try (Connection conn = konek.getConnection();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery("SELECT nama_resep FROM resep")) {
@@ -147,6 +179,8 @@ public class Penjualan extends javax.swing.JPanel {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Gagal load resep: " + e.getMessage());
+        } finally {
+        isLoadingResep = false;
         }
     }
     
@@ -218,6 +252,11 @@ public class Penjualan extends javax.swing.JPanel {
 
             }
         ));
+        table1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(table1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -412,15 +451,38 @@ public class Penjualan extends javax.swing.JPanel {
     }//GEN-LAST:event_txtketeranganActionPerformed
 
     private void btnsaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsaveActionPerformed
-        try (Connection conn = konek.getConnection()) {
-        conn.setAutoCommit(false);
+        Connection conn = null;
+    try {
+        conn = konek.getConnection();
+        conn.setAutoCommit(false); // penting agar rollback bisa jalan
 
         // 1. Ambil data dari form
         String namaResep = cbxresep.getSelectedItem().toString();
-        String idPelanggan = cbxpelanggan.getSelectedItem().toString();
-        String harga = txtharga.getText();
+        String namaPelanggan = cbxpelanggan.getSelectedItem().toString();
+        String hargaStr = txtharga.getText();
         String keterangan = txtketerangan.getText();
-        java.sql.Date sqlDate = new java.sql.Date(jDateChooser1.getDate().getTime());
+        java.util.Date utilDate = jDateChooser1.getDate();
+  
+        if (utilDate == null || hargaStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tanggal dan Harga tidak boleh kosong.");
+            return;
+        }
+
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        double harga = Double.parseDouble(hargaStr);
+        
+        int idPelanggan = 0;
+        String sqlCariIdPelanggan = "SELECT id_pelanggan FROM pelanggan WHERE nama_pelanggan = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sqlCariIdPelanggan)) {
+            pst.setString(1, namaPelanggan);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                idPelanggan = rs.getInt("id_pelanggan");
+            } else {
+                JOptionPane.showMessageDialog(this, "pelanggan tidak ditemukan!");
+                return;
+            }
+        }
 
         // 2. Cari id_resep dari nama_resep
         String idResep = "";
@@ -436,26 +498,33 @@ public class Penjualan extends javax.swing.JPanel {
             }
         }
 
-        // 3. Simpan data ke tabel penjualan (hanya nama_resep)
-        String sqlInsert = "INSERT INTO penjualan (id_pelanggan, nama_resep, harga, tanggal, keterangan) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement pst = conn.prepareStatement(sqlInsert)) {
-            pst.setString(1, idPelanggan);
+        // 3. Simpan ke tabel penjualan dan ambil id_penjualan
+        int idPenjualan = -1;
+        String sqlInsert = "INSERT INTO penjualan (id_pelanggan, nama_resep, nama_pelanggan, total, tanggal, keterangan) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pst = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, idPelanggan);
             pst.setString(2, namaResep);
-            pst.setString(3, harga);
-            pst.setDate(4, sqlDate);
-            pst.setString(5, keterangan);
+            pst.setString(3, namaPelanggan);
+            pst.setDouble(4,harga);
+            pst.setDate(5, sqlDate);
+            pst.setString(6, keterangan);
             pst.executeUpdate();
+
+            ResultSet generatedKeys = pst.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                idPenjualan = generatedKeys.getInt(1);
+            }
         }
 
         // 4. Update stok barang berdasarkan detail_resep
-        String sqlDetail = "SELECT id_barang, jumlah_barang FROM detail_resep WHERE id_resep = ?";
+        String sqlDetail = "SELECT id_barang, jumlah FROM detail_resep WHERE id_resep = ?";
         try (PreparedStatement pst = conn.prepareStatement(sqlDetail)) {
             pst.setString(1, idResep);
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
                 String idBarang = rs.getString("id_barang");
-                int jumlahPakai = rs.getInt("jumlah_barang");
+                int jumlahPakai = rs.getInt("jumlah");
 
                 String updateStok = "UPDATE barang SET stok = stok - ? WHERE id_barang = ?";
                 try (PreparedStatement pstUpdate = conn.prepareStatement(updateStok)) {
@@ -466,10 +535,21 @@ public class Penjualan extends javax.swing.JPanel {
             }
         }
 
-        conn.commit();
-        JOptionPane.showMessageDialog(this, "Penjualan berhasil disimpan dan stok barang dikurangi.");
+        // 5. Tambahkan ke tabel keuangan dan kaitkan dengan id_penjualan
+        String sqlKeuangan = "INSERT INTO keuangan (tanggal, tipe, jumlah, id_penjualan) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pst = conn.prepareStatement(sqlKeuangan)) {
+            pst.setDate(1, sqlDate);
+            pst.setString(2, "Pemasukan Harian");
+            pst.setDouble(3, harga);
+            //pst.setString(4, "Penjualan: " + namaResep);
+            pst.setInt(4, idPenjualan);
+            pst.executeUpdate();
+        }
 
-        // Tambah ke tabel UI
+        conn.commit();
+        JOptionPane.showMessageDialog(this, "Penjualan berhasil disimpan, stok dikurangi, dan data masuk ke keuangan.");
+
+        // Tambahkan ke UI tabel jika perlu
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
         model.addRow(new Object[]{
             model.getRowCount() + 1,
@@ -482,34 +562,169 @@ public class Penjualan extends javax.swing.JPanel {
         });
 
         clearForm();
-
     } catch (Exception e) {
-        try {
-            konek.getConnection().rollback();
+        /**try {
+            if (conn != null) conn.rollback(); // rollback di koneksi yang sama
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Rollback error: " + ex.getMessage());
-        }
+        }**/
         JOptionPane.showMessageDialog(this, "Gagal menyimpan data: " + e.getMessage());
-    }
+        e.printStackTrace();
+    } /**finally {
+        try {
+            if (conn != null) conn.setAutoCommit(true); // kembalikan ke default
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }**/                  
     }//GEN-LAST:event_btnsaveActionPerformed
     private void clearForm() {
         cbxresep.setSelectedIndex(0);
-        txtharga.setText("");
+        //txtharga.setText("");
         cbxpelanggan.setSelectedIndex(0);
         txtketerangan.setText("");
         jDateChooser1.setDate(null);
     }
     private void btneditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditActionPerformed
-        // TODO add your handling code here:
+    int selectedRow = table1.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin diedit di tabel terlebih dahulu.");
+        return;
+    }
+
+    try {
+        // Ambil nilai dari form
+        String namaPelanggan = cbxpelanggan.getSelectedItem().toString();
+        String namaResep = cbxresep.getSelectedItem().toString();
+        String hargaStr = txtharga.getText().trim();
+        String keterangan = txtketerangan.getText().trim();
+        java.util.Date utilDate = jDateChooser1.getDate();
+
+        if (utilDate == null || hargaStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tanggal dan Harga tidak boleh kosong.");
+            return;
+        }
+
+        double harga = Double.parseDouble(hargaStr);
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+
+        // Ambil id_penjualan dari baris yang dipilih di tabel
+        int idPenjualan = (int) table1.getValueAt(selectedRow, 0);
+
+        // Update data di database
+        String sql = "UPDATE penjualan SET nama_pelanggan=?, nama_resep=?, total=?, tanggal=?, keterangan=? WHERE id_penjualan=?";
+        try (Connection conn = konek.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, namaPelanggan);
+            pst.setString(2, namaResep);
+            pst.setDouble(3, harga);
+            pst.setDate(4, sqlDate);
+            pst.setString(5, keterangan);
+            pst.setInt(6, idPenjualan);
+
+            int updated = pst.executeUpdate();
+
+            if (updated > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil diupdate.");
+                tampilkanSemuaData(); // Refresh table
+                clearForm(); // Kosongkan form jika ada fungsi ini
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal mengupdate data.");
+            }
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mengedit data.");
+    }
     }//GEN-LAST:event_btneditActionPerformed
 
     private void btndeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeleteActionPerformed
-        // TODO add your handling code here:
+        int selectedRow = table1.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih baris data yang ingin dihapus.");
+            return;
+        }
+
+        // Ambil ID Penjualan dari kolom pertama tabel
+        int idPenjualan = (int) table1.getValueAt(selectedRow, 0);
+
+        int konfirmasi = JOptionPane.showConfirmDialog(
+            this,
+            "Apakah Anda yakin ingin menghapus data ini?",
+            "Konfirmasi Hapus",
+            JOptionPane.YES_NO_OPTION
+        );
+
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            try (Connection conn = konek.getConnection()) {
+                // Hapus juga dari tabel keuangan jika ada relasi
+                String sqlDeleteKeuangan = "DELETE FROM keuangan WHERE id_penjualan = ?";
+                try (PreparedStatement pst1 = conn.prepareStatement(sqlDeleteKeuangan)) {
+                    pst1.setInt(1, idPenjualan);
+                    pst1.executeUpdate();
+                }
+
+                // Hapus dari tabel penjualan
+                String sqlDeletePenjualan = "DELETE FROM penjualan WHERE id_penjualan = ?";
+                try (PreparedStatement pst2 = conn.prepareStatement(sqlDeletePenjualan)) {
+                    pst2.setInt(1, idPenjualan);
+                    int rowsAffected = pst2.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        JOptionPane.showMessageDialog(this, "Data berhasil dihapus.");
+                        tampilkanSemuaData(); // Refresh tabel setelah penghapusan
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Gagal menghapus data.");
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menghapus data.");
+            }
+        }
     }//GEN-LAST:event_btndeleteActionPerformed
 
     private void cbxresepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxresepActionPerformed
-        
+        if (!isLoadingResep) {
+        loadhargaresep();
+    }
     }//GEN-LAST:event_cbxresepActionPerformed
+
+    private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
+        int selectedRow = table1.getSelectedRow();
+
+    if (selectedRow != -1) {
+        try {
+            // Ambil data dari tabel
+            int idPenjualan = (int) table1.getValueAt(selectedRow, 0);
+            int idPelanggan = (int) table1.getValueAt(selectedRow, 1);
+            String namaPelanggan = (String) table1.getValueAt(selectedRow, 2);
+            String namaResep = (String) table1.getValueAt(selectedRow, 3);
+            double harga = (double) table1.getValueAt(selectedRow, 4);
+            String tanggalStr = (String) table1.getValueAt(selectedRow, 5);
+            String keterangan = (String) table1.getValueAt(selectedRow, 6);
+
+            // Set nilai pada combo box dan field
+            cbxpelanggan.setSelectedItem(namaPelanggan);
+            cbxresep.setSelectedItem(namaResep);
+            txtharga.setText(String.valueOf(harga));
+            txtketerangan.setText(keterangan);
+
+            // Format tanggal ke dalam java.util.Date
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date tanggal = sdf.parse(tanggalStr);
+            jDateChooser1.setDate(tanggal);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menampilkan data dari tabel.");
+        }
+    }
+    }//GEN-LAST:event_table1MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndelete;

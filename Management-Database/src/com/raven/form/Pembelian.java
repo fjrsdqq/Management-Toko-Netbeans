@@ -23,6 +23,7 @@ public class Pembelian extends javax.swing.JPanel {
 com.raven.component.koneksi konek = new com.raven.component.koneksi();
 private boolean isEditing = false;
 private int selectedPembelianId = -1;
+private int idb = -1;
     public Pembelian() {
         initComponents();
         initKategoriComboBox();
@@ -40,13 +41,14 @@ private int selectedPembelianId = -1;
 
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
-            new Object[]{"ID", "IDS","Barang", "Nama Supplier", "Perusahaan", "Telp", "Tanggal","Harga/Kg", "total", "Keterangan"}, 0
+            new Object[]{"ID", "IDS","IDB","Barang", "Nama Supplier", "Perusahaan", "Telp", "Tanggal","Harga/Kg", "total", "Keterangan"}, 0
         );
         tblpembelian.setModel(model);
 
         String sql = "SELECT " +
                      "p.id_pembelian, " +
                      "p.id_supplier, " +
+                     "p.id_barang, " +
                      "p.tanggal, " +
                      "p.total, " +
                      "p.keterangan, " +
@@ -71,7 +73,8 @@ private int selectedPembelianId = -1;
             while (rs.next()) {
                 ModelPembelian data = new ModelPembelian(
                     rs.getInt("id_pembelian"),
-                    rs.getInt("id_supplier"), // id_supplier (int) dari pembelian
+                    rs.getInt("id_supplier"),
+                    rs.getInt("id_barang"),// id_supplier (int) dari pembelian
                     rs.getString("nama_bahan"),
                     rs.getString("nama_supplier"),
                     rs.getString("NPerusahaan"),
@@ -383,12 +386,15 @@ private int selectedPembelianId = -1;
         btnSave.setText("Update");
 
         selectedPembelianId = (int) tblpembelian.getValueAt(selectedRow, 0); // ID Pembelian
-
+        
         String id_supp_str_from_table = tblpembelian.getValueAt(selectedRow, 1).toString(); // ID Supplier (String)
-        String tanggalStr = tblpembelian.getValueAt(selectedRow, 6).toString(); // Tanggal
-        String totalStr = tblpembelian.getValueAt(selectedRow, 8).toString(); // totalH
-        String keterangan = tblpembelian.getValueAt(selectedRow, 9).toString(); // Keterangan
-        String HargaPkg = tblpembelian.getValueAt(selectedRow, 7).toString();
+        idb = (int) tblpembelian.getValueAt(selectedRow, 2);
+        String tanggalStr = tblpembelian.getValueAt(selectedRow, 7).toString(); // Tanggal
+        String totalStr = tblpembelian.getValueAt(selectedRow, 9).toString(); // totalH
+        String keterangan = tblpembelian.getValueAt(selectedRow, 10).toString(); // Keterangan
+        String HargaPkg = tblpembelian.getValueAt(selectedRow, 8).toString();
+       
+        
 
         // Perbaikan parsing
         double total = Double.parseDouble(totalStr);
@@ -408,6 +414,7 @@ private int selectedPembelianId = -1;
         txtStok.setText(String.valueOf(stok));
         txtTotal.setText(totalStr);
         txtKeterangan.setText(keterangan);
+        
 
         // Set comboBox supplier
         DefaultComboBoxModel<ModelDataSupplier> cmbModel = (DefaultComboBoxModel<ModelDataSupplier>) cmbSupplier.getModel();
@@ -457,6 +464,7 @@ private int selectedPembelianId = -1;
             }
             updatePembelian(sqlDate, total, keterangan, idSupplier);
             updateKeuangan(sqlDate, total, selectedPembelianId);
+            updateBarang(sqlDate, NamaB, kategoriB, Stok, HargaP, keterangan, idSupplier);
         } else {
             int idBarang = InsertBarang(sqlDate, HargaP, Stok, keterangan, kategoriB, NamaB, idSupplier);
             if (idBarang != -1) {
@@ -524,7 +532,7 @@ private int selectedPembelianId = -1;
     String sql = "INSERT INTO barang (id_supplier, nama_bahan, jenis_bahan, stok, hargapkg, keterangan, tanggal) VALUES (?, ?, ?, ?, ?, ?, ?)";
     try (Connection conn = konek.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+        
         stmt.setInt(1, idSupplier);
         stmt.setString(2, NamaB);
         stmt.setString(3, kategoriB);
@@ -551,7 +559,31 @@ private int selectedPembelianId = -1;
     }
     return -1; // jika gagal
 }
+private void updateBarang(java.sql.Date tanggal,String NamaB, String kategoriB,double Stok,double HargaP, String keterangan, int idSupplier) {
+    String sql = "UPDATE barang SET nama_bahan=?, jenis_bahan=?, stok=?, hargapkg=?, keterangan=?, tanggal=? WHERE id_barang=?";
+    
+    try (Connection conn = konek.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, NamaB); // ✅ nama_bahan
+        stmt.setString(2, kategoriB); // ✅ jenis_bahan
+        stmt.setDouble(3, Stok); // ✅ stok
+        stmt.setDouble(4, HargaP); // ✅ hargapkg
+        stmt.setString(5, keterangan); // ✅ keterangan
+        stmt.setDate(6, tanggal); // ✅ tanggal
+        stmt.setInt(7, idb); // ✅ WHERE id_barang=?
 
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows > 0) {
+            JOptionPane.showMessageDialog(this, "Barang berhasil diupdate!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal mengupdate Barang.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error database saat update: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+}
     
 
     private void updatePembelian(java.sql.Date tanggal, double total, String keterangan, int idSupplier) {
@@ -744,6 +776,7 @@ private void calculateTotalHarga() {
         cmbKategori.setSelectedIndex(0); // Mungkin perlu direset juga
         cmbBarang.removeAllItems(); // Kosongkan cmbBarang
         isEditing = false;
+        idb = -1;
         selectedPembelianId = -1;
         btnSave.setText("Save");
     }

@@ -2,7 +2,8 @@ package com.raven.model;
 
 public class ModelPembelian {
     private int id; 
-    private int id_supp; 
+    private int id_supp;
+    private int idb;
     private String namaB; 
     private String namaSupplier; 
     private String nPerusahaan; 
@@ -12,9 +13,10 @@ public class ModelPembelian {
     private double totalH; 
     private String keterangan; 
 
-    public ModelPembelian(int id, int id_supp,String namaB, String namaSupplier, String nPerusahaan, String noTelp, String tanggal,double hargap, double totalH, String keterangan) {
+    public ModelPembelian(int id, int id_supp,int idb,String namaB, String namaSupplier, String nPerusahaan, String noTelp, String tanggal,double hargap, double totalH, String keterangan) {
         this.id = id;
         this.id_supp = id_supp;
+        this.idb = idb;
         this.namaB = namaB;
         this.namaSupplier = namaSupplier;
         this.nPerusahaan = nPerusahaan;
@@ -29,6 +31,7 @@ public class ModelPembelian {
         return new Object[]{
             id,
             id_supp,
+            idb,
             namaB,
             namaSupplier,
             nPerusahaan,
@@ -56,6 +59,15 @@ public class ModelPembelian {
     public void setId_supp(int id_supp) {
         this.id_supp = id_supp;
     }
+    
+    public int getIdb() {
+        return idb;
+    }
+
+    public void setIdb(int idb) {
+        this.idb = idb;
+    }
+    
     public String getnamaB() {
         return namaB;
     }

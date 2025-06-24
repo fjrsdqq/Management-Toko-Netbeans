@@ -312,10 +312,61 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
     }
     }
     private void lapKaryawan(){
+        try {
+        // Pastikan koneksi jalan
+        Connection conn = konek.getConnection();  // Sesuaikan dengan class koneksi kamu
+
+        // Lokasi file laporan .jasper
+        String path = "src/Report/lapKaryawan.jasper";  // Sesuaikan dengan lokasi sebenarnya
+
+        // Jika butuh parameter, tambahkan ke sini
+        HashMap<String, Object> parameter = new HashMap<>();
+        // Misalnya parameter.put("id_barang", "B001");
+
+        // Isi laporan
+        JasperPrint print = JasperFillManager.fillReport(path, parameter, conn);
+
+        // Tampilkan laporan di viewer Jasper
+        JasperViewer viewer = new JasperViewer(print, false);
+        viewer.setTitle("Laporan Data Karyawan");
+        viewer.setVisible(true);
+
+        // Jika mau langsung export PDF (opsional)
+         JasperExportManager.exportReportToPdfFile(print, "LaporanDataKaryawan.pdf");
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Gagal mencetak laporan: " + ex.getMessage());
+        ex.printStackTrace();
+    }
         
     }
     private void lapTransaksi(){
-        
+        try {
+        // Pastikan koneksi jalan
+        Connection conn = konek.getConnection();  // Sesuaikan dengan class koneksi kamu
+
+        // Lokasi file laporan .jasper
+        String path = "src/Report/lapKeuangan.jasper";  // Sesuaikan dengan lokasi sebenarnya
+
+        // Jika butuh parameter, tambahkan ke sini
+        HashMap<String, Object> parameter = new HashMap<>();
+        // Misalnya parameter.put("id_barang", "B001");
+
+        // Isi laporan
+        JasperPrint print = JasperFillManager.fillReport(path, parameter, conn);
+
+        // Tampilkan laporan di viewer Jasper
+        JasperViewer viewer = new JasperViewer(print, false);
+        viewer.setTitle("Laporan Data Transaksi");
+        viewer.setVisible(true);
+
+        // Jika mau langsung export PDF (opsional)
+         JasperExportManager.exportReportToPdfFile(print, "LaporanDataTransaksi.pdf");
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Gagal mencetak laporan: " + ex.getMessage());
+        ex.printStackTrace();
+    }
     }
     private void logout() {
     int confirm = JOptionPane.showConfirmDialog(this, "Yakin ingin logout?", "Konfirmasi", JOptionPane.YES_NO_OPTION);

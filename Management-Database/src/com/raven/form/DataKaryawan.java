@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 import java.math.BigDecimal;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class DataKaryawan extends javax.swing.JPanel {
     com.raven.component.koneksi konek = new com.raven.component.koneksi();
@@ -34,6 +36,22 @@ public class DataKaryawan extends javax.swing.JPanel {
 
     private void initData() {
         initTableData();
+     t_cari.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
     }
     
     private void kosong(){

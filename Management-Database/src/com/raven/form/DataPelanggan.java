@@ -78,9 +78,10 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                 ModelDataPelanggan data = new ModelDataPelanggan(
                     rs.getString("id_pelanggan"),
                     rs.getString("nama_pelanggan"),
+                    rs.getString("perusahaan"),
                     rs.getString("no_hp"),
-                    rs.getString("alamat"),
-                    rs.getString("perusahaan")
+                    rs.getString("alamat")
+                    
                 );
                 model.addRow(data.toRowTable());
             }

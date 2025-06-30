@@ -180,6 +180,8 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtsearch" min="-2" pref="245" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -194,6 +196,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="txtsearch" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="374" max="32767" attributes="0"/>
@@ -245,6 +248,11 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="txtsearch">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Cari:"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

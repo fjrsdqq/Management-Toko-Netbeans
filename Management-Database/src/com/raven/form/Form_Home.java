@@ -21,7 +21,6 @@ public class Form_Home extends javax.swing.JPanel {
 com.raven.component.koneksi konek = new com.raven.component.koneksi();
     public Form_Home() {
         initComponents();
-        
         tblkeuangan.fixTable(jScrollPane1);
         setOpaque(false);
         initData();
@@ -152,15 +151,53 @@ try {
 
         
         }
+    
+    private double getTotal(String tipe, boolean harian) {
+        double total = 0;
+        String sql;
+
+        if (harian) {
+            sql = "SELECT SUM(jumlah) as jumlah FROM keuangan WHERE tipe = ? AND tanggal = CURDATE()";
+        } else {
+            sql = "SELECT SUM(jumlah) as jumlah FROM keuangan WHERE tipe = ?";
+        }
+
+        try (Connection conn = konek.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, tipe);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                total = rs.getDouble("jumlah");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal ambil data total: " + e.getMessage());
+        }
+
+        return total;
+    }
+
+    
     private void initCardData() {
+        double pemasukanHarian = getTotal("Pemasukan Harian", true);
+        double pengeluaranHarian = getTotal("Pengeluaran Harian", true);
+        double pemasukanTotal = getTotal("Pemasukan Harian", false);
+        double pengeluaranTotal = getTotal("Pengeluaran Harian", false);
+
         Icon icon1 = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.PEOPLE, 60, new Color(255, 255, 255, 100), new Color(255, 255, 255, 15));
-        card1.setData(new ModelCard("PEMASUKAN HARIAN", 5100, 20, icon1));
+        card1.setData(new ModelCard("PEMASUKAN HARIAN", pemasukanHarian, 20, icon1));
+
         Icon icon2 = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.MONETIZATION_ON, 60, new Color(255, 255, 255, 100), new Color(255, 255, 255, 15));
-        card2.setData(new ModelCard("PENGELUARAN HARIAN", 2000, 60, icon2));
+        card2.setData(new ModelCard("PENGELUARAN HARIAN", pengeluaranHarian, 60, icon2));
+
         Icon icon3 = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.SHOPPING_BASKET, 60, new Color(255, 255, 255, 100), new Color(255, 255, 255, 15));
-        card3.setData(new ModelCard("REKAP BULANAN", 3000, 80, icon3));
+        card3.setData(new ModelCard("TOTAL PEMASUKAN", pemasukanTotal, 80, icon3));
+
         Icon icon4 = IconFontSwing.buildIcon(GoogleMaterialDesignIcons.BUSINESS_CENTER, 60, new Color(255, 255, 255, 100), new Color(255, 255, 255, 15));
-        card4.setData(new ModelCard("REKAP TAHUNAN", 550, 95, icon4));
+        card4.setData(new ModelCard("TOTAL PENGELUARAN", pengeluaranTotal, 95, icon4));
     }
 
 
@@ -178,6 +215,7 @@ try {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblkeuangan = new com.raven.swing.table.Table();
         t_cari = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         card4 = new com.raven.component.Card();
 
         card1.setColorGradient(new java.awt.Color(211, 28, 215));
@@ -229,6 +267,8 @@ try {
             }
         });
 
+        jLabel2.setText("Cari:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -238,8 +278,10 @@ try {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 965, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -247,7 +289,8 @@ try {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(t_cari, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -268,14 +311,14 @@ try {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(card3, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(card4, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(37, Short.MAX_VALUE))))
+                                .addComponent(card1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(card2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(card3, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(card4, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -308,6 +351,7 @@ try {
     private com.raven.component.Card card3;
     private com.raven.component.Card card4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

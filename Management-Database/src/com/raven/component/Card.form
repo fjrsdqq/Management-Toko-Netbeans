@@ -24,20 +24,17 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lbTitle" min="-2" max="-2" attributes="0"/>
+                  <Component id="lbValues" alignment="0" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lbIcon" pref="131" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="pro" pref="200" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="lbPer" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="lbTitle" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lbValues" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="lbIcon" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -48,19 +45,16 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="lbTitle" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lbIcon" pref="62" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="lbValues" min="-2" max="-2" attributes="0"/>
+                      <Component id="lbPer" min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="lbIcon" max="32767" attributes="0"/>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="lbPer" alignment="1" min="-2" pref="20" max="-2" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="pro" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="lbTitle" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="lbValues" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -94,8 +88,6 @@
       <Properties>
         <Property name="horizontalAlignment" type="int" value="4"/>
       </Properties>
-    </Component>
-    <Component class="com.raven.swing.ProgressBarCustom" name="pro">
     </Component>
     <Component class="javax.swing.JLabel" name="lbPer">
       <Properties>

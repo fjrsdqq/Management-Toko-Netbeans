@@ -55,20 +55,23 @@ public class DataSupplier extends javax.swing.JPanel {
             return;
         }
 
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"ID Supplier", "Nama", "Perusahaan", "No HP", "Alamat",  "Keterangan"},0
+    );
         table1.setModel(model);
 
         try {
             Connection conn = konek.getConnection();
             String sql = "SELECT * FROM supplier WHERE "
+                       + "id_supplier LIKE ? OR "
                        + "nama_supplier LIKE ? OR "
+                       + "perusahaan LIKE ? OR "
                        + "no_hp LIKE ? OR "
                        + "alamat LIKE ? OR "
-                       + "perusahaan LIKE ? OR "
                        + "keterangan LIKE ?";
             PreparedStatement ps = conn.prepareStatement(sql);
 
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i <= 6; i++) {
                 ps.setString(i, "%" + keyword + "%");
             }
 
@@ -80,9 +83,9 @@ public class DataSupplier extends javax.swing.JPanel {
                 ModelDataSupplier data = new ModelDataSupplier(
                     rs.getString("id_supplier"),
                     rs.getString("nama_supplier"),
+                    rs.getString("perusahaan"),
                     rs.getString("no_hp"),
                     rs.getString("alamat"),
-                    rs.getString("perusahaan"),
                     rs.getString("keterangan")
                 );
                 model.addRow(data.toRowTable());
@@ -213,10 +216,12 @@ public class DataSupplier extends javax.swing.JPanel {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
-                        .addGap(739, 739, 739)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 745, Short.MAX_VALUE)
                         .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1096, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 15, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1102, Short.MAX_VALUE)))
+                .addGap(15, 15, 15))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -350,8 +355,8 @@ public class DataSupplier extends javax.swing.JPanel {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(btndelete))
                                             .addComponent(txtketerangan, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 363, Short.MAX_VALUE))))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

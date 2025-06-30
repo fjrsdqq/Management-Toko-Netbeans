@@ -2,8 +2,6 @@ package com.raven.main;
 
 import com.raven.component.Header;
 import com.raven.component.Menu;
-import com.raven.event.EventMenuSelected;
-import com.raven.event.EventShowPopupMenu;
 import com.raven.form.Pembelian;
 import com.raven.form.Bumbu;
 import com.raven.form.DataKaryawan;
@@ -16,7 +14,6 @@ import com.raven.form.Tepung;
 import com.raven.form.DataPelanggan;
 import com.raven.form.DataSupplier;
 import com.raven.form.Penjualan;
-import com.raven.form.Keuangan;
 import com.raven.swing.MenuItem;
 import com.raven.swing.PopupMenu;
 import com.raven.swing.icon.GoogleMaterialDesignIcons;
@@ -24,10 +21,8 @@ import com.raven.swing.icon.IconFontSwing;
 import java.awt.Component;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.Map;
 import javax.swing.JOptionPane;
 import net.miginfocom.swing.MigLayout;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -103,9 +98,7 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                         case 1:
                             main.showForm(new Pembelian());
                             break;
-                        case 2:
-                            main.showForm(new Keuangan());
-                            break;
+                        
                     }
                     break;
                 case 7: // Laporan

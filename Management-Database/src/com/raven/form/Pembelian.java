@@ -37,7 +37,98 @@ private int idb = -1;
     private void initData() {
         loadSuppliersToComboBox();
         initTableData();
+        txtsearch.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                performSearch();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                performSearch();
+            }
+        });
     }
+    private void performSearch() {
+    String keyword = txtsearch.getText().trim();
+
+    if (keyword.isEmpty()) {
+        initTableData(); // Menampilkan semua data jika input kosong
+        return;
+    }
+
+    DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"ID", "IDS", "IDB", "Barang", "Nama Supplier", "Perusahaan", "Telp", "Tanggal", "Harga/Kg", "total", "Keterangan"}, 0
+    );
+    tblpembelian.setModel(model);
+
+    String sql = "SELECT " +
+                 "p.id_pembelian, " +
+                 "p.id_supplier, " +
+                 "p.id_barang, " +
+                 "p.tanggal, " +
+                 "p.total, " +
+                 "p.keterangan, " +
+                 "s.nama_supplier, " +
+                 "s.perusahaan AS NPerusahaan, " +
+                 "s.no_hp AS Notelp, " +
+                 "b.hargapkg, " +
+                 "b.nama_bahan " +
+                 "FROM pembelian p " +
+                 "JOIN supplier s ON p.id_supplier = s.id_supplier " +
+                 "JOIN barang b ON p.id_barang = b.id_barang " +
+                 "WHERE LOWER(b.nama_bahan) LIKE ? OR " +
+                 "LOWER(s.nama_supplier) LIKE ? OR " +
+                 "LOWER(s.perusahaan) LIKE ? OR " +
+                 "LOWER(s.no_hp) LIKE ? OR " +
+                 "LOWER(p.keterangan) LIKE ? " +
+                 "ORDER BY p.tanggal DESC";
+
+    try (Connection conn = konek.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        // Masukkan keyword ke semua parameter pencarian
+        for (int i = 1; i <= 5; i++) {
+            ps.setString(i, "%" + keyword.toLowerCase() + "%");
+        }
+
+        ResultSet rs = ps.executeQuery();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        int rowCount = 0;
+        while (rs.next()) {
+            rowCount++;
+            ModelPembelian data = new ModelPembelian(
+                rs.getInt("id_pembelian"),
+                rs.getInt("id_supplier"),
+                rs.getInt("id_barang"),
+                rs.getString("nama_bahan"),
+                rs.getString("nama_supplier"),
+                rs.getString("NPerusahaan"),
+                rs.getString("Notelp"),
+                sdf.format(rs.getDate("tanggal")),
+                rs.getDouble("hargapkg"),
+                rs.getDouble("total"),
+                rs.getString("keterangan")
+            );
+            model.addRow(data.toRowTable());
+        }
+
+        if (rowCount == 0) {
+            JOptionPane.showMessageDialog(null, "Data tidak ditemukan.");
+        }
+
+        rs.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mencari data: " + e.getMessage());
+    }
+}
 
     private void initTableData() {
         DefaultTableModel model = new DefaultTableModel(
@@ -105,7 +196,7 @@ private int idb = -1;
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblpembelian = new com.raven.swing.table.Table();
-        jTextField3 = new javax.swing.JTextField();
+        txtsearch = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -168,12 +259,11 @@ private int idb = -1;
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 760, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,7 +271,7 @@ private int idb = -1;
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtsearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE))
         );
@@ -849,12 +939,12 @@ private void calculateTotalHarga() {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField3;
     private com.raven.swing.table.Table tblpembelian;
     private javax.swing.JTextField txtHargap;
     private javax.swing.JTextField txtKeterangan;
     private javax.swing.JTextField txtStok;
     private com.toedter.calendar.JDateChooser txtTanggal;
     private javax.swing.JTextField txtTotal;
+    private javax.swing.JTextField txtsearch;
     // End of variables declaration//GEN-END:variables
 }

@@ -407,7 +407,7 @@ try {
 }
 
 try (Connection conn = konek.getConnection()) {
-    String sql = "INSERT INTO barang (nama_bahan, jenis_bahan, jumlah_stock, keterangan, tanggal) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO barang (nama_bahan, jenis_bahan, stok, keterangan, tanggal) VALUES (?, ?, ?, ?, ?)";
     PreparedStatement ps = conn.prepareStatement(sql);
     ps.setString(1, nama);
     ps.setString(2, "Ikan"); // ✅ ubah dari 'Bumbu' ke 'Ikan'
@@ -459,7 +459,7 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 String tanggal = sdf.format(tanggalDate);
 
 try (Connection conn = konek.getConnection()) {
-    String sql = "UPDATE barang SET nama_bahan = ?, tanggal = ?, jumlah_stock = ?, keterangan = ? WHERE id_barang = ?";
+    String sql = "UPDATE barang SET nama_bahan = ?, tanggal = ?, stok = ?, keterangan = ? WHERE id_barang = ?";
     PreparedStatement ps = conn.prepareStatement(sql);
     ps.setString(1, namaIkan);
     ps.setString(2, tanggal);

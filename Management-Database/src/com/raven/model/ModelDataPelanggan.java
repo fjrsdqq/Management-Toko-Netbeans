@@ -11,9 +11,10 @@ package com.raven.model;
 public class ModelDataPelanggan {
     private String Id_Pelanggan;
     private String Nama_pelanggan;
+    private String perusahaan;
     private String kontaks;
     private String Alamat;
-    private String perusahaan;
+    
     
     
 
@@ -21,16 +22,17 @@ public class ModelDataPelanggan {
         
         this.Id_Pelanggan = Id_Pelanggan;
         this.Nama_pelanggan = Nama_pelanggan;
+        this.perusahaan = perusahaan;
         this.kontaks = kontaks;
         this.Alamat = Alamat;
-         this.perusahaan = perusahaan;
+        
         
         
     }
 
-    public ModelDataPelanggan(String id, String nama, String alamat, String kontak, String perusahaan, String keterangan) {
+    /**public ModelDataPelanggan(String id, String nama, String alamat, String kontak, String perusahaan) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    }**/
 
     
     public String getId_Pelanggan() {

@@ -12,7 +12,7 @@ public class ModelDataPenjualan {
     private int id_penjualan;
     private int id_pelanggan;
     private String nama_pelanggan;
-    private String resep;
+    private String nama_resep;
     private Double total;
     private String tanggal;
     private String keterangan;
@@ -25,11 +25,12 @@ public class ModelDataPenjualan {
         this.total = total;
         this.keterangan = keterangan;
         this.nama_pelanggan = nama_pelanggan;
-        this.resep = resep;
+        this.nama_resep = resep;
     }
 
     /**public ModelDataPenjualan(String id, String nama, String keterangan, String kontak, String total, String keterangan) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+     * @return 
     }**/
 
     public int getid_penjualan() {
@@ -82,15 +83,15 @@ public class ModelDataPenjualan {
     }
     
     public String getresep() {
-        return resep;
+        return nama_resep;
     }
 
     public void setresep(String resep) {
-        this.resep = resep;
+        this.nama_resep = resep;
     }
     
     public Object[] toRowTable() {
-    return new Object[]{ id_penjualan, id_pelanggan, nama_pelanggan, resep, total, tanggal, keterangan};
+    return new Object[]{ id_penjualan, id_pelanggan, nama_pelanggan, nama_resep, total, tanggal, keterangan};
 }
 
 }

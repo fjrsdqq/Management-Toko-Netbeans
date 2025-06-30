@@ -67,11 +67,10 @@ com.raven.component.koneksi konek = new com.raven.component.koneksi();
                      "id_keuangan LIKE ? OR " +
                      "tanggal LIKE ? OR " +
                      "tipe LIKE ? OR " +
-                     "keterangan LIKE ? OR " +
                      "CAST(jumlah AS CHAR) LIKE ?";
         PreparedStatement ps = conn.prepareStatement(sql);
 
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 4; i++) {
             ps.setString(i, "%" + keyword + "%");
         }
 

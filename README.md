@@ -2,7 +2,7 @@
 
 - Ini adalah proyek aplikasi **Manajemen Toko** yang dibuat menggunakan **Netbeans** (Java).
 - Dibuat Oleh Kelompok 3 kelas R6O/RO, Universitas Indraprasta PGRI.
-# (remainder) Jangan lupa pake JDK 1.8 di Projectnya !!!!!
+# (remainder) Jangan lupa pake JDK 1.8 di Projectnya!
 #### Contoh Library yang benar : 
 ![image](https://github.com/user-attachments/assets/1e71014a-f711-4dcd-8efa-5f10da2d8397)
 ## tutorial Jasper Report
